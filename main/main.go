@@ -37,6 +37,7 @@ func main() {
 	r.GET("/order/:id", GetOrder)           //3)获取demo_order的详情
 	r.GET("/order/", GetOrderList)          //4）获取demo_order列表
 	r.DELETE("/order/delete/:id", DeleteOrder)
+	r.GET("/orderSearch", GetSortedOrderList) //5)获取模糊查询结果
 	r.Run(":8080")
 
 }
@@ -95,10 +96,15 @@ func GetOrderList(c *gin.Context) {
 
 }
 
-////根据user_name做模糊查找、根据创建时间、金额排序
-//func GetListedOrderList(c *gin.Context)  {
-//	var orderList []Demo_order
-//	likeName := c.Params.ByName("user_name")
-//	rows := db.QueryExpr("select * from t_ally where ally_name like ?", "%" + likeName + "%")
-//
-//}
+//根据user_name做模糊查找、根据创建时间、金额排序
+func GetSortedOrderList(c *gin.Context) {
+	var order Demo_order
+	var orderList []Demo_order
+	c.BindJSON(&order)
+	likeName := order.User_name
+	fmt.Scan(likeName)
+	db = db.Raw("select * from demo_order where user_name like ? ORDER BY amount DESC", "%"+likeName+"%").Scan(&orderList)
+	c.JSON(200, orderList)
+	fmt.Println(orderList)
+
+}
