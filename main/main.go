@@ -14,10 +14,10 @@ var err error
 type Demo_order struct {
 	ID        uint    `json:"id"`
 	Order_No  string  `json:"order_no"`
-	user_name string  `json:"user_name"`
-	amount    float64 `json:"amount"`
-	status    string  `json:"status"`
-	file_url  string  `json:"file_url"`
+	User_name string  `json:"user_name"`
+	Amount    float64 `json:"amount"`
+	Status    string  `json:"status"`
+	File_url  string  `json:"file_url"`
 }
 
 func main() {
@@ -27,6 +27,7 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
+	db.SingularTable(true)
 	defer db.Close()
 
 	db.AutoMigrate(&Demo_order{})
