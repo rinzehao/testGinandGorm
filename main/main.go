@@ -94,3 +94,11 @@ func GetOrderList(c *gin.Context) {
 	}
 
 }
+
+////根据user_name做模糊查找、根据创建时间、金额排序
+//func GetListedOrderList(c *gin.Context)  {
+//	var orderList []Demo_order
+//	likeName := c.Params.ByName("user_name")
+//	rows := db.QueryExpr("select * from t_ally where ally_name like ?", "%" + likeName + "%")
+//
+//}
