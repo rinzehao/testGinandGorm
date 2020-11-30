@@ -16,8 +16,10 @@ import (
 func DeleteOrder(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var order model.Demo_order
-	d := db.Db.Where("id = ?", id).Delete(&order)
-	fmt.Println(d)
+	if err := db.Db.Where("id = ?", id).Delete(&order).Error; err != nil {
+		c.AbortWithStatus(404)
+		fmt.Println(404)
+	}
 	c.JSON(200, gin.H{"id #" + id: "deleted"})
 }
 
@@ -29,10 +31,19 @@ func UpdateOrder(c *gin.Context) {
 	if err := db.Db.Where("id = ?", id).First(&order).Error; err != nil {
 		c.AbortWithStatus(404)
 		fmt.Println(err)
+		fmt.Println("更新条目失败：查询不到相应条目")
 	}
-	c.BindJSON(&order)
+	if err := c.BindJSON(&order); err != nil {
+		c.AbortWithStatus(404)
+		fmt.Println(err)
+		fmt.Println("更新条目失败：JSON绑定错误")
+	}
 
-	db.Db.Save(&order)
+	if err := db.Db.Save(&order).Error; err != nil {
+		c.AbortWithStatus(404)
+		fmt.Println(err)
+		fmt.Println("更新条目失败：保存错误")
+	}
 	c.JSON(200, order)
 
 }
@@ -40,7 +51,11 @@ func UpdateOrder(c *gin.Context) {
 func CreateOrder(c *gin.Context) {
 
 	var order model.Demo_order
-	c.BindJSON(&order)
+	if err := c.BindJSON(&order); err != nil {
+		c.AbortWithStatus(404)
+		fmt.Println(err)
+		fmt.Println("创建条目失败：JSON绑定失败")
+	}
 
 	db.Db.Create(&order)
 	c.JSON(200, order)
@@ -49,9 +64,12 @@ func CreateOrder(c *gin.Context) {
 func GetOrder(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var order model.Demo_order
+	db.Db.LogMode(true)
 	if err := db.Db.Where("id = ?", id).First(&order).Error; err != nil {
 		c.AbortWithStatus(404)
 		fmt.Println(err)
+		fmt.Println("获取条目失败：找不到指定条目")
+
 	} else {
 		c.JSON(200, order)
 	}
@@ -71,10 +89,23 @@ func GetOrderList(c *gin.Context) {
 func GetSortedOrderList(c *gin.Context) {
 	var order model.Demo_order
 	var orderList []model.Demo_order
-	c.BindJSON(&order)
-	likeName := order.User_name
+
+	if err := c.BindJSON(&order); err != nil {
+		c.AbortWithStatus(404)
+		fmt.Println(err)
+		fmt.Println("模糊查找条目失败:JSO你绑定错误")
+	}
+	likeName := order.UserName
 	fmt.Scan(likeName)
-	db.Db = db.Db.Raw("select * from demo_order where user_name like ? ORDER BY amount DESC", "%"+likeName+"%").Scan(&orderList)
+	if err := db.Db.Raw("select * from demo_order where user_name like ? ORDER BY amount DESC",
+		"%"+likeName+"%").Error; err != nil {
+		c.AbortWithStatus(404)
+		fmt.Println(err)
+		fmt.Println("模糊查找条目失败：sql查询出错")
+	} else {
+		db.Db = db.Db.Raw("select * from demo_order where user_name like ? ORDER BY amount DESC",
+			"%"+likeName+"%").Scan(&orderList)
+	}
 	c.JSON(200, orderList)
 	fmt.Println(orderList)
 }
@@ -88,21 +119,33 @@ func GetUploadUrl(c *gin.Context) {
 	//开启事务
 	tx := db.Db.Begin()
 	str := TestUpload(c)
+	if str == " " {
+		fmt.Println("更新url失败：获取新url为空")
+		tx.Rollback()
+	}
 	sql := "UPDATE demo_order SET file_url=?  WHERE id=?"
 	result := tx.Exec(sql, str, id)
 	if result == nil {
+		fmt.Println("更新url失败：更新操作失败")
 		tx.Rollback()
 	}
 	fmt.Println(str)
-	tx.Commit()
+	if err := tx.Commit().Error; err != nil {
+		c.AbortWithStatus(404)
+		fmt.Println(err)
+		fmt.Println("更新url失败：事务提交出错")
+	}
+
 }
 
 //下载demo_order,以excel形式导出
 func DownLoadExcel(c *gin.Context) {
+	db.Db.LogMode(true)
 	var outOutFile = "order.xlsx"
 	file := xlsx.NewFile()
 	sheet, err := file.AddSheet("order_list")
 	if err != nil {
+		fmt.Println("下载失败：添加表单失败")
 		fmt.Println(err.Error())
 	}
 	list := GetDownLoadList()
@@ -127,18 +170,19 @@ func DownLoadExcel(c *gin.Context) {
 		orderId.Value = strconv.Itoa(order.ID)
 		fmt.Println(orderId.Value)
 		orderNo := row.AddCell()
-		orderNo.Value = order.Order_No
+		orderNo.Value = order.OrderNo
 		orderName := row.AddCell()
-		orderName.Value = order.User_name
+		orderName.Value = order.UserName
 		orderAmount := row.AddCell()
 		orderAmount.Value = strconv.FormatFloat(float64(order.Amount), 'f', 3, 64)
 		orderStatus := row.AddCell()
 		orderStatus.Value = order.Status
 		orderFile := row.AddCell()
-		orderFile.Value = order.File_url
+		orderFile.Value = order.FileUrl
 	}
 	err = file.Save(outOutFile)
 	if err != nil {
+		fmt.Println("下载失败：保存表单失败")
 		fmt.Println(err.Error())
 	}
 	fmt.Println("\n\n export success")
@@ -147,7 +191,12 @@ func DownLoadExcel(c *gin.Context) {
 
 func GetDownLoadList() []model.Demo_order {
 	var orderList []model.Demo_order
-	db.Db = db.Db.Raw("select * from demo_order").Scan(&orderList)
+
+	if err := db.Db.Raw("select * from demo_order").Error; err != nil {
+		fmt.Println("获取数据库表单失败：查询出错")
+		fmt.Println(err.Error())
+	}
+
 	return orderList
 }
 

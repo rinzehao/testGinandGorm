@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"testGinandGorm/db"
@@ -11,7 +10,6 @@ import (
 func main() {
 
 	db.DbInit()
-	r := gin.Default()
-	router.BindRoute(r)
+	router.BindRoute()
 	db.DbClose()
 }

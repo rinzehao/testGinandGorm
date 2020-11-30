@@ -12,15 +12,15 @@ var Db *gorm.DB
 var err error
 
 func DbInit() error {
-	Db, _ = gorm.Open("mysql", "root:123456@tcp(127.0.0.1:3306)/test_gorm?charset=utf8&parseTime=True&loc=Local")
+	Db, err = gorm.Open("mysql", "root:123456@tcp(127.0.0.1:3306)/test_gorm?charset=utf8&parseTime=True&loc=Local")
 
 	if err != nil {
 		fmt.Println(err)
 		return err
 	}
 	Db.SingularTable(true)
-
-	Db.AutoMigrate(&model.Demo_order{})
+	Db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(&model.Demo_order{})
+	//Db.AutoMigrate(&model.Demo_order{})
 
 	return err
 }
