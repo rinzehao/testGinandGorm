@@ -43,8 +43,12 @@ func (handler *OrderHandler) GetOrder(c *gin.Context) {
 func (handler *OrderHandler) UpdateOrder(c *gin.Context) {
 	var order model.Demo_order
 	id := c.Params.ByName("id")
-
-	if err, c := handler.orderService.UpdateOrder(id, &order, c); err != nil {
+	if err := c.BindJSON(&order); err != nil {
+		c.AbortWithStatus(404)
+		fmt.Println(err)
+		fmt.Println("更新条目失败：JSON绑定错误")
+	}
+	if err := handler.orderService.UpdateOrder(id, &order); err != nil {
 		c.AbortWithStatus(404)
 		fmt.Println(err)
 		fmt.Println("更新条目失败")
@@ -104,7 +108,7 @@ func (handler *OrderHandler) DownLoadExcel(c *gin.Context) {
 	var outPutFileUrl = "order.xlsx"
 	file := xlsx.NewFile()
 	if err := handler.orderService.DownLoadExcel(file); err != nil {
-
+		fmt.Println(err)
 	}
 	err = file.Save(outPutFileUrl)
 	if err != nil {
@@ -118,8 +122,9 @@ func (handler *OrderHandler) DownLoadExcel(c *gin.Context) {
 //获取文件url并保存
 func (handler *OrderHandler) GetUploadUrl(c *gin.Context) {
 	id := c.Params.ByName("id")
+	str := service.TestUpload(c)
 	fmt.Println("id:" + id)
-	if err := handler.orderService.GetUploadUrl(c); err != nil {
+	if err := handler.orderService.GetUploadUrl(id, str); err != nil {
 		fmt.Println(err)
 		panic("上传错误")
 	}

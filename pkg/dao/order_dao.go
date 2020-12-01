@@ -30,6 +30,10 @@ func (orderDao *OrderDao) GetOrder(id string, s *model.Demo_order) error {
 	return orderDao.db.Where("id = ?", id).First(&s).Error
 }
 
+func (OrderDao *OrderDao) FindOrder(id string) error {
+	return OrderDao.db.Raw("select * from demo_order where id = ? " + id).Error
+}
+
 func (orderDao *OrderDao) GetOrderList(list *[]model.Demo_order) error {
 	return orderDao.db.Find(&list).Error
 }

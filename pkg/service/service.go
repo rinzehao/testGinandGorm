@@ -39,21 +39,16 @@ func (service *OrderService) GetOrder(id string, order *model.Demo_order) error 
 	return err
 }
 
-func (service *OrderService) UpdateOrder(id string, order *model.Demo_order, c *gin.Context) (error, *gin.Context) {
+func (service *OrderService) UpdateOrder(id string, order *model.Demo_order) error {
 	var err error
-	if err = service.orderDao.GetOrder(id, order); err != nil {
+	if err = service.orderDao.FindOrder(id); err != nil {
 		fmt.Println(err)
 		fmt.Println("更新条目失败：查询不到相应条目")
-	} else if err = c.BindJSON(&order); err != nil {
-		c.AbortWithStatus(404)
-		fmt.Println(err)
-		fmt.Println("更新条目失败：JSON绑定错误")
 	} else if err = service.orderDao.Update(order); err != nil {
-		c.AbortWithStatus(404)
 		fmt.Println(err)
 		fmt.Println("更新条目失败：保存错误")
 	}
-	return err, c
+	return err
 }
 
 func (service *OrderService) CreateOrder(order *model.Demo_order) error {
@@ -134,16 +129,14 @@ func (service *OrderService) DownLoadExcel(file *xlsx.File) error {
 }
 
 //获取文件url并保存
-func (service *OrderService) GetUploadUrl(c *gin.Context) error {
+func (service *OrderService) GetUploadUrl(id string, str string) error {
 	//var order model.Demo_order
-	id := c.Params.ByName("id")
 	fmt.Println("id:" + id)
 	//开启事务
 	err, tx := service.orderDao.GetSessionBegin()
 	if err != nil {
 		fmt.Println(err)
 	}
-	str := TestUpload(c)
 	if str == " " {
 		fmt.Println("更新url失败：获取新url为空")
 		tx.Rollback()
@@ -154,7 +147,6 @@ func (service *OrderService) GetUploadUrl(c *gin.Context) error {
 	}
 	fmt.Println(str)
 	if err := tx.Commit().Error; err != nil {
-		c.AbortWithStatus(404)
 		fmt.Println(err)
 		fmt.Println("更新url失败：事务提交出错")
 	}
