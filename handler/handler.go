@@ -30,7 +30,7 @@ func (handler *OrderHandler) DeleteOrder(c *gin.Context) {
 
 func (handler *OrderHandler) GetOrder(c *gin.Context) {
 	id := c.Params.ByName("id")
-	var order model.Demo_order
+	var order model.DemoOrder
 	if err := handler.orderService.GetOrder(id, &order); err != nil {
 		c.AbortWithStatus(404)
 		fmt.Println(err)
@@ -41,14 +41,13 @@ func (handler *OrderHandler) GetOrder(c *gin.Context) {
 }
 
 func (handler *OrderHandler) UpdateOrder(c *gin.Context) {
-	var order model.Demo_order
-	id := c.Params.ByName("id")
+	var order model.DemoOrder
 	if err := c.BindJSON(&order); err != nil {
 		c.AbortWithStatus(404)
 		fmt.Println(err)
 		fmt.Println("更新条目失败：JSON绑定错误")
 	}
-	if err := handler.orderService.UpdateOrder(id, &order); err != nil {
+	if err := handler.orderService.UpdateOrder(&order); err != nil {
 		c.AbortWithStatus(404)
 		fmt.Println(err)
 		fmt.Println("更新条目失败")
@@ -59,7 +58,7 @@ func (handler *OrderHandler) UpdateOrder(c *gin.Context) {
 
 func (handler *OrderHandler) CreateOrder(c *gin.Context) {
 
-	var order model.Demo_order
+	var order model.DemoOrder
 	if err := c.BindJSON(&order); err != nil {
 		c.AbortWithStatus(404)
 		fmt.Println(err)
@@ -74,7 +73,7 @@ func (handler *OrderHandler) CreateOrder(c *gin.Context) {
 }
 
 func (handler *OrderHandler) GetOrderList(c *gin.Context) {
-	var orderList []model.Demo_order
+	var orderList []model.DemoOrder
 	if err, orderList := handler.orderService.GetOrderList(orderList); err != nil {
 		c.AbortWithStatus(404)
 		fmt.Println(err)
@@ -86,8 +85,8 @@ func (handler *OrderHandler) GetOrderList(c *gin.Context) {
 //根据user_name做模糊查找、根据创建时间、金额排序
 func (handler *OrderHandler) GetSortedOrderList(c *gin.Context) {
 	var err error
-	var order model.Demo_order
-	var orderList []model.Demo_order
+	var order model.DemoOrder
+	var orderList []model.DemoOrder
 	if err = c.BindJSON(&order); err != nil {
 		c.AbortWithStatus(404)
 		fmt.Println(err)
@@ -102,7 +101,7 @@ func (handler *OrderHandler) GetSortedOrderList(c *gin.Context) {
 	fmt.Println(orderList)
 }
 
-//下载demo_order,以excel形式导出
+//下载DemoOrder,以excel形式导出
 func (handler *OrderHandler) DownLoadExcel(c *gin.Context) {
 	var err error
 	var outPutFileUrl = "order.xlsx"

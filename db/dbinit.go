@@ -21,7 +21,7 @@ func DbInit() *gorm.DB {
 		panic("")
 	}
 	Db.SingularTable(true)
-	Db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(&model.Demo_order{})
+	Db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(&model.DemoOrder{})
 	//Db.AutoMigrate(&model.Demo_order{})
 
 	return Db

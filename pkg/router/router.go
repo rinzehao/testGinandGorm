@@ -11,7 +11,7 @@ import (
 func BindRoute(orderHandler *handler.OrderHandler) {
 	r := gin.Default()
 	r.POST("/order/create", orderHandler.CreateOrder)       //1）创建 demo_order
-	r.PUT("/order/update/:id", orderHandler.UpdateOrder)    //2)更新demo_order （amount、stuatus、file_url）
+	r.PUT("/orderUpdate", orderHandler.UpdateOrder)         //2)更新demo_order （amount、stuatus、file_url）
 	r.GET("/order/:id", orderHandler.GetOrder)              //3)获取demo_order的详情
 	r.GET("/order", orderHandler.GetOrderList)              //4）获取demo_order列表
 	r.GET("/orderSearch", orderHandler.GetSortedOrderList)  //5)获取模糊查询结果

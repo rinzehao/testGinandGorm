@@ -24,75 +24,70 @@ func NewService(dao *dao.OrderDao) *OrderService {
 func (service *OrderService) DeleteOrder(id string) error {
 	var err error
 	if err = service.orderDao.Delete(id); err != nil {
-		fmt.Println(404)
 		return err
 	}
 	return err
 }
 
-func (service *OrderService) GetOrder(id string, order *model.Demo_order) error {
+func (service *OrderService) GetOrder(id string, order *model.DemoOrder) error {
 	var err error
 	if err = service.orderDao.GetOrder(id, order); err != nil {
-		fmt.Println(err)
-		fmt.Println("获取条目失败：找不到指定条目")
+		return err
 	}
 	return err
 }
 
-func (service *OrderService) UpdateOrder(id string, order *model.Demo_order) error {
+func (service *OrderService) UpdateOrder(order *model.DemoOrder) error {
 	var err error
-	if err = service.orderDao.FindOrder(id); err != nil {
-		fmt.Println(err)
-		fmt.Println("更新条目失败：查询不到相应条目")
+	var orderNo = order.OrderNo
+	if err = service.orderDao.FindOrder(orderNo); err != nil {
+		return err
 	} else if err = service.orderDao.Update(order); err != nil {
-		fmt.Println(err)
-		fmt.Println("更新条目失败：保存错误")
+		return err
 	}
 	return err
 }
 
-func (service *OrderService) CreateOrder(order *model.Demo_order) error {
+func (service *OrderService) CreateOrder(order *model.DemoOrder) error {
 	var err error
-	var id = strconv.Itoa(order.ID)
-	if err = service.orderDao.GetOrder(id, order); err != nil {
+	orderNo := order.OrderNo
+	if err = service.orderDao.FindOrder(orderNo); err == nil {
 		service.orderDao.Create(order)
 	}
 	return err
 }
 
-func (service *OrderService) GetOrderList(list []model.Demo_order) (error, []model.Demo_order) {
+func (service *OrderService) GetOrderList(list []model.DemoOrder) (error, []model.DemoOrder) {
 	var err error
 	if err = service.orderDao.GetOrderList(&list); err != nil {
-		fmt.Println(err)
+		return err, nil
 	}
 	return err, list
 }
 
 //根据user_name做模糊查找、根据创建时间、金额排序
-func (service *OrderService) GetSortedOrderList(order *model.Demo_order,
-	orderList []model.Demo_order) (error, []model.Demo_order) {
+func (service *OrderService) GetSortedOrderList(order *model.DemoOrder,
+	orderList []model.DemoOrder) (error, []model.DemoOrder) {
 
 	var err error
 	likeName := order.UserName
 	fmt.Scan(likeName)
 	if err = service.orderDao.GetSortedOrderList(likeName, &orderList); err != nil {
-		fmt.Println(err)
-		fmt.Println("模糊查找条目失败：sql查询出错")
+		return err, nil
 	}
 	fmt.Println(orderList)
 	return err, orderList
 }
 
-//下载demo_order,以excel形式导出
+//下载DemoOrder,以excel形式导出
 func (service *OrderService) DownLoadExcel(file *xlsx.File) error {
 	sheet, err := file.AddSheet("order_list")
-	var list []model.Demo_order
+	var list []model.DemoOrder
 	if err != nil {
-		fmt.Println("下载失败：添加表单失败")
-		fmt.Println(err.Error())
+		return err
 	}
 	if err = service.orderDao.GetOrderList(&list); err != nil {
-		fmt.Println(err)
+		return err
 	}
 	//定义表头
 	headeRow := sheet.AddRow()
@@ -130,26 +125,15 @@ func (service *OrderService) DownLoadExcel(file *xlsx.File) error {
 
 //获取文件url并保存
 func (service *OrderService) GetUploadUrl(id string, str string) error {
-	//var order model.Demo_order
 	fmt.Println("id:" + id)
+	var err error
 	//开启事务
-	err, tx := service.orderDao.GetSessionBegin()
-	if err != nil {
-		fmt.Println(err)
-	}
 	if str == " " {
-		fmt.Println("更新url失败：获取新url为空")
-		tx.Rollback()
+		return err
+	} else if err := service.orderDao.GetTransactionBegin(str, id); err != nil {
+		return err
 	}
-	if err := service.orderDao.UpdateUrl(str, id, tx); err != nil {
-		fmt.Println(err)
-		tx.Rollback()
-	}
-	fmt.Println(str)
-	if err := tx.Commit().Error; err != nil {
-		fmt.Println(err)
-		fmt.Println("更新url失败：事务提交出错")
-	}
+
 	return err
 }
 

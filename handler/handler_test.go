@@ -19,9 +19,8 @@ func Init() *service.OrderService {
 }
 
 func TestCreateOrder(t *testing.T) {
-	id := 1
 	testService := Init()
-	orderSample := model.Demo_order{ID: id, UserName: "test", OrderNo: "test", Amount: 14.6, Status: "Test", FileUrl: "www.test.com"}
+	orderSample := model.DemoOrder{ID: 999, UserName: "test", OrderNo: "test", Amount: 14.6, Status: "Test", FileUrl: "www.test.com"}
 	if err := testService.CreateOrder(&orderSample); err != nil {
 		fmt.Print(err)
 	}
@@ -38,7 +37,7 @@ func TestDeleteOrder(t *testing.T) {
 func TestGetOrder(t *testing.T) {
 	id := 1
 	testService := Init()
-	orderSample := model.Demo_order{ID: id, UserName: "test", OrderNo: "test", Amount: 14.6, Status: "Test", FileUrl: "www.test.com"}
+	orderSample := model.DemoOrder{ID: id, UserName: "test", OrderNo: "test", Amount: 14.6, Status: "Test", FileUrl: "www.test.com"}
 	if err := testService.GetOrder(strconv.Itoa(id), &orderSample); err != nil {
 		fmt.Print(err)
 	}
@@ -47,7 +46,7 @@ func TestGetOrder(t *testing.T) {
 func TestGetOrderList(t *testing.T) {
 	testService := Init()
 	var err error
-	var list []model.Demo_order
+	var list []model.DemoOrder
 	if err, list = testService.GetOrderList(list); err != nil {
 		fmt.Print(err)
 	}
@@ -58,10 +57,9 @@ func TestGetOrderList(t *testing.T) {
 
 func TestUpdateOrder(t *testing.T) {
 	testService := Init()
-	id := "1"
-	var order model.Demo_order
+	var order = model.DemoOrder{ID: 1, UserName: "test", OrderNo: "test", Amount: 14.6, Status: "Test", FileUrl: "www.test.com"}
 	var err error
-	if err = testService.UpdateOrder(id, &order); err != nil {
+	if err = testService.UpdateOrder(&order); err != nil {
 		fmt.Println(err)
 	}
 }
@@ -77,8 +75,8 @@ func TestDownLoadExcel(t *testing.T) {
 func TestGetSortedOrderList(t *testing.T) {
 	testService := Init()
 	var err error
-	var orderSampleArray []model.Demo_order
-	orderSample := model.Demo_order{ID: 1, UserName: "枣糕", OrderNo: "test", Amount: 14.6, Status: "Test", FileUrl: "www.test.com"}
+	var orderSampleArray []model.DemoOrder
+	orderSample := model.DemoOrder{ID: 1, UserName: "枣糕", OrderNo: "test", Amount: 14.6, Status: "Test", FileUrl: "www.test.com"}
 	if err, orderSampleArray = testService.GetSortedOrderList(&orderSample, orderSampleArray); err != nil {
 		fmt.Println(err)
 	}
