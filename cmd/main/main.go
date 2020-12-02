@@ -5,8 +5,8 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"testGinandGorm/db"
-	"testGinandGorm/handler"
 	"testGinandGorm/pkg/dao"
+	"testGinandGorm/pkg/handler"
 	"testGinandGorm/pkg/router"
 	"testGinandGorm/pkg/service"
 )
