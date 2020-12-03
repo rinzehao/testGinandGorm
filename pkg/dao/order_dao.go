@@ -1,7 +1,6 @@
 package dao
 
 import (
-	"fmt"
 	"github.com/jinzhu/gorm"
 	_ "testGinandGorm/db"
 	"testGinandGorm/pkg/model"
@@ -16,7 +15,7 @@ func NewOrderDao(Db *gorm.DB) *OrderDao {
 	return &OrderDao{db: Db}
 }
 
-// todo Create
+// todo CreateOrder
 func (orderDao *OrderDao) CreateOrder(s *model.DemoOrder) (err error) {
 	if err = orderDao.db.Create(&s).Error; err != nil {
 		return err
@@ -46,10 +45,8 @@ func (orderDao *OrderDao) QueryOrderById(id string) (order *model.DemoOrder, err
 }
 
 // todo QueryOrderIsExist
-func (OrderDao *OrderDao) QueryOrderIsExist(m map[string]string ,queryParam string,order *model.DemoOrder) (isExit bool, err error) {
-	OrderDao.db.LogMode(true)
-	fmt.Print(m[queryParam])
-	if err = OrderDao.db.Where(queryParam+ " = ?", m[queryParam]).First(&order).Error; err == gorm.ErrRecordNotFound {
+func (orderDao *OrderDao) QueryOrderIsExist(m map[string]string ,queryParam string,order *model.DemoOrder) (isExit bool, err error) {
+	if err = orderDao.db.Where(queryParam+ " = ?", m[queryParam]).First(&order).Error; err == gorm.ErrRecordNotFound {
 		return false, err
 	}
 	return true, err
@@ -57,12 +54,10 @@ func (OrderDao *OrderDao) QueryOrderIsExist(m map[string]string ,queryParam stri
 
 // todo QueryOrders
 func (orderDao *OrderDao) QueryOrders(page, pageSize int) (orders []*model.DemoOrder, err error) {
-
 	orderDao.db.LogMode(true)
 	if err = orderDao.db.Offset((page - 1) * pageSize).Limit(pageSize).Find(&orders).Error; err != nil {
 		return nil, err
 	}
-
 	return orders, err
 }
 
@@ -78,13 +73,13 @@ func (orderDao *OrderDao) QuerySortedOrdersByUserName(UserName, orderBy, desc st
 }
 
 // todo TranscationUpdateById
-func (OrderDao *OrderDao) TransactionUpdateById(updateMap map[string]string, id string) error {
+func (orderDao *OrderDao) TransactionUpdateById(updateMap map[string]string, id string) error {
 	var k,v string
 	for k, v = range updateMap{}
-	tx := OrderDao.db.Begin()
-	defer OrderDao.db.Rollback()
-	OrderDao.db.LogMode(true)
-	if err := OrderDao.db.Model(model.DemoOrder{}).Where("id = ?", id).Update(k, v).Error; err != nil {
+	tx := orderDao.db.Begin()
+	defer orderDao.db.Rollback()
+	orderDao.db.LogMode(true)
+	if err := orderDao.db.Model(model.DemoOrder{}).Where("id = ?", id).Update(k, v).Error; err != nil {
 		return err
 	}
 	return tx.Commit().Error
