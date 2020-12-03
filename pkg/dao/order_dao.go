@@ -30,10 +30,17 @@ func (orderDao *OrderDao) DeleteById(id string) error {
 }
 
 // todo UpdateByOrderNo
-func (orderDao *OrderDao) UpdateByOrderNo(orderNo string, s *model.DemoOrder) error {
+//func (orderDao *OrderDao) UpdateByOrderNo(orderNo string, s *model.DemoOrder) error {
+//	orderDao.db.LogMode(true)
+//	return orderDao.db.Model(&model.DemoOrder{}).Where("order_no = ?", orderNo).Update(&s).Error
+//}
+
+// todo UpdateByParam
+func (orderDao *OrderDao ) UpdateByParam(ordermap map[string]string,paramName string , s *model.DemoOrder) error  {
 	orderDao.db.LogMode(true)
-	return orderDao.db.Model(&model.DemoOrder{}).Where("order_no = ?", orderNo).Update(&s).Error
+	return orderDao.db.Model(&model.DemoOrder{}).Where(paramName+" =?",ordermap[paramName]).Update(&s).Error
 }
+
 
 // todo QueryOrderById
 func (orderDao *OrderDao) QueryOrderById(id string) (order *model.DemoOrder, err error) {

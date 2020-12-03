@@ -35,8 +35,9 @@ func (service *OrderService) QueryOrderById(id string) (order *model.DemoOrder, 
 
 func (service *OrderService) UpdateByOrderNo(order *model.DemoOrder) error {
 	var err error
-	orderNo := order.OrderNo
-	if err = service.orderDao.UpdateByOrderNo(orderNo, order); err != nil {
+	paramName :="order_No"
+	m :=StructOrderToMap(order)
+	if err = service.orderDao.UpdateByParam(m,paramName,order); err != nil {
 		return err
 	}
 	return err

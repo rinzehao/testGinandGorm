@@ -33,7 +33,7 @@ func TestOrderService_QueryOrderById(t *testing.T) {
 
 func TestOrderService_UpdateByOrderNo(t *testing.T) {
 	testService :=Init()
-	sample := model.DemoOrder{ID: 16, UserName: "raious", Amount: 444, Status: "over", FileUrl: ".././pkg/dao"}
+	sample := model.DemoOrder{OrderNo:"16", UserName: "raious", Amount: 444, Status: "over"}
 	err := testService.UpdateByOrderNo(&sample)
 	assert.NoError(t,err)
 }

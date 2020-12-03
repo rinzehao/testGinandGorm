@@ -91,3 +91,19 @@ func TestQueryTranscationUpdateById(t *testing.T) {
 	log.Println(sample)
 	assert.NoError(t,err)
 }
+
+func TestOrderDao_UpdateByParam(t *testing.T) {
+	dao, sample := initial()
+	m:=map[string]string{
+		"Id" :strconv.Itoa(sample.ID),
+		"order_No":sample.OrderNo,
+		"user_name" :sample.UserName,
+		"amount" :strconv.FormatFloat(sample.Amount, 'E', -1, 64),
+		"status" :sample.Status,
+		"file_url":sample.FileUrl,
+	}
+	sample = model.DemoOrder{ UserName: "raious", Amount: 666}
+	paramName :="user_name"
+	err := dao.UpdateByParam(m,paramName,&sample)
+	assert.NoError(t,err)
+}
