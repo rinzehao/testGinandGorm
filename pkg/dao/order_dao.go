@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"fmt"
 	"github.com/jinzhu/gorm"
 	_ "testGinandGorm/db"
 	"testGinandGorm/pkg/model"
@@ -25,6 +26,7 @@ func (orderDao *OrderDao) CreateOrder(s *model.DemoOrder) (err error) {
 
 // todo DeleteById
 func (orderDao *OrderDao) DeleteById(id string) error {
+	orderDao.db.LogMode(true)
 	return orderDao.db.Where("id = ?", id).Delete(&model.DemoOrder{}, id).Error
 }
 
@@ -43,9 +45,11 @@ func (orderDao *OrderDao) QueryOrderById(id string) (order *model.DemoOrder, err
 	return order, err
 }
 
-// todo QueryOrderIsExistByOrderNo
-func (OrderDao *OrderDao) QueryOrderIsExistByOrderNo(orderNo string) (isExit bool, err error) {
-	if err = OrderDao.db.Where("order_no = ?", orderNo).Error; err != nil {
+// todo QueryOrderIsExist
+func (OrderDao *OrderDao) QueryOrderIsExist(m map[string]string ,queryParam string,order *model.DemoOrder) (isExit bool, err error) {
+	OrderDao.db.LogMode(true)
+	fmt.Print(m[queryParam])
+	if err = OrderDao.db.Where(queryParam+ " = ?", m[queryParam]).First(&order).Error; err == gorm.ErrRecordNotFound {
 		return false, err
 	}
 	return true, err
@@ -73,16 +77,15 @@ func (orderDao *OrderDao) QuerySortedOrdersByUserName(UserName, orderBy, desc st
 	return orders, err
 }
 
-// todo QueryTranscationUpdateById
-func (OrderDao *OrderDao) QueryTranscationUpdateById(url string, id string) error {
-
-	var err error
+// todo TranscationUpdateById
+func (OrderDao *OrderDao) TransactionUpdateById(updateMap map[string]string, id string) error {
+	var k,v string
+	for k, v = range updateMap{}
 	tx := OrderDao.db.Begin()
-	defer tx.Rollback()
-	if err = OrderDao.db.Model(model.DemoOrder{}).Where("id = ?", id).Update("file_url", url).Error; err != nil {
-		return err
-	} else if err = tx.Commit().Error; err != nil {
+	defer OrderDao.db.Rollback()
+	OrderDao.db.LogMode(true)
+	if err := OrderDao.db.Model(model.DemoOrder{}).Where("id = ?", id).Update(k, v).Error; err != nil {
 		return err
 	}
-	return err
+	return tx.Commit().Error
 }

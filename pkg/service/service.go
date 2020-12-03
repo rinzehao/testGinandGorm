@@ -43,14 +43,14 @@ func (service *OrderService) UpdateByOrderNo(order *model.DemoOrder) error {
 }
 
 func (service *OrderService) CreateOrderByOrderNo(order *model.DemoOrder) error {
-	//var err error
-	orderNo := order.OrderNo
-	if isExit, err := service.orderDao.QueryOrderIsExistByOrderNo(orderNo); isExit == true {
+	m:=StructOrderToMap(order)
+	queryParam :="order_No"
+	if isExit, err := service.orderDao.QueryOrderIsExist(m ,queryParam,order); isExit == false {
 		service.orderDao.CreateOrder(order)
-		return err
 	} else {
 		return err
 	}
+	return nil
 }
 
 func (service *OrderService) QueryOrders() (orders []*model.DemoOrder, err error) {
@@ -123,8 +123,25 @@ func (service *OrderService) GetUploadUrlAndSave(id string, url string) error {
 	var err error
 	if len(url) == 0 {
 		return err
-	} else if err = service.orderDao.QueryTranscationUpdateById(url, id); err != nil {
-		return err
+	} else {
+		m :=map[string]string{
+			"file_url" : url,
+		}
+		if err = service.orderDao.TransactionUpdateById(m, id); err != nil {
+			return err
+		}
 	}
 	return err
+}
+
+func StructOrderToMap(order *model.DemoOrder) map[string]string {
+	m :=map[string]string{
+		"Id" :strconv.Itoa(order.ID),
+		"order_No":order.OrderNo,
+		"user_name" :order.UserName,
+		"amount" :strconv.FormatFloat(order.Amount, 'E', -1, 64),
+		"status" :order.Status,
+		"file_url":order.FileUrl,
+	}
+	return m
 }
