@@ -15,7 +15,7 @@ func initial() (dao OrderDao, sample model.DemoOrder) {
 	return dao, sample
 }
 
-func TestOrderDao_Create(t *testing.T) {
+func TestCreateOrder(t *testing.T) {
 	dao, sample := initial()
 	err := dao.CreateOrder(&sample)
 	assert.Error(t,err)
@@ -24,16 +24,49 @@ func TestOrderDao_Create(t *testing.T) {
 	assert.Error(t,err)
 }
 
-func TestOrderDao_DeleteById(t *testing.T) {
+func TestDeleteById(t *testing.T) {
 	dao, sample := initial()
+	dao.db.LogMode(true)
 	err:=dao.DeleteById(strconv.Itoa(sample.ID))
 	assert.NoError(t,err)
 }
 
-func TestOrderDao_UpdateByOrderNo(t *testing.T) {
+func TestUpdateByNoStruct(t *testing.T) {
 	dao, sample := initial()
+	dao.db.LogMode(true)
+	err := dao.UpdateByNoStruct(&sample)
+	assert.NoError(t,err)
+	sample.ID =0
+	sample.Amount=0.00
+	err = dao.UpdateByNoStruct(&sample)
+	assert.NoError(t,err)
+	dao.db.Model(&model.DemoOrder{}).Where("order_no = ?",sample.OrderNo).Update(sample)
+	dao.db.Where("order_no = ?",sample.OrderNo).Update(sample)
+	sample.ID =16
+	dao.db.Update(sample)
+}
+
+func TestUpdateByNo(t *testing.T) {
+	dao, sample := initial()
+	dao.db.LogMode(true)
 	orderNo := sample.OrderNo
-	err := dao.UpdateByOrderNo(orderNo, &sample)
+	m:=map[string]interface{}{
+			"Id" :sample.ID,
+			"order_No":sample.OrderNo,
+			"user_name" :sample.UserName,
+			"amount" :sample.Amount,
+			"status" :sample.Status,
+			"file_url":sample.FileUrl,
+	}
+	err := dao.UpdateByNo(orderNo, m)
+	assert.NoError(t,err)
+	m = map[string]interface{}{
+		"order_No":sample.OrderNo,
+		"user_name" :sample.UserName,
+		"amount" :sample.Amount,
+		"file_url":sample.FileUrl,
+	}
+	err = dao.UpdateByNo(orderNo, m)
 	assert.NoError(t,err)
 }
 
@@ -48,62 +81,45 @@ func TestQueryOrderById(t *testing.T) {
 	assert.NoError(t,err)
 }
 
-func TestQueryOrderIsExist(t *testing.T) {
+func TestQueryOrdersByName(t *testing.T) {
 	dao, sample := initial()
-	m:=map[string]string{
-		"Id" :strconv.Itoa(sample.ID),
-		"order_No":sample.OrderNo,
-		"user_name" :sample.UserName,
-		"amount" :strconv.FormatFloat(sample.Amount, 'E', -1, 64),
-		"status" :sample.Status,
-		"file_url":sample.FileUrl,
-	}
-	paramName :="user_name"
-	isExit, err := dao.QueryOrderIsExist(m,paramName,&sample)
-	assert.True(t,isExit)
+	dao.db.LogMode(true)
+	userName, orderBy, desc := sample.UserName, "amount", "desc"
+	orders, err := dao.QueryOrdersByName(userName, orderBy, desc)
+	assert.NotEmpty(t,orders)
 	assert.NoError(t,err)
 }
 
 func TestQueryOrders(t *testing.T) {
 	dao, sample := initial()
-	page, pageSize := 0, 100
-	log.Print(sample)
+	log.Println(sample)
+	dao.db.LogMode(true)
+	page, pageSize := 0, 10
 	orders, err := dao.QueryOrders(page, pageSize)
 	assert.NoError(t,err)
 	assert.NotEmpty(t,orders)
-}
-
-func TestQuerySortedOrdersByUserName(t *testing.T) {
-	dao, sample := initial()
-	userName, orderBy, desc := sample.UserName, "amount", "desc"
-	orders, err := dao.QuerySortedOrdersByUserName(userName, orderBy, desc)
-	assert.NotEmpty(t,orders)
+	page, pageSize = 0, 100
+	orders, err = dao.QueryOrders(page, pageSize)
 	assert.NoError(t,err)
+	assert.NotEmpty(t,orders)
+	page, pageSize = -1, 100
+	orders, err = dao.QueryOrders(page,pageSize)
+	assert.NoError(t,err)
+	assert.NotEmpty(t,orders)
+	page, pageSize = 1, 10
+	orders, err = dao.QueryOrders(page,pageSize)
+	assert.NoError(t,err)
+	assert.NotEmpty(t,orders)
 }
 
-func TestQueryTranscationUpdateById(t *testing.T) {
+func TestUpdateById(t *testing.T) {
 	dao, sample := initial()
 	url, id := ".././test", "16"
-	m := map[string]string{
+	m := map[string]interface{}{
 		"file_url": url,
 	}
-	err := dao.TransactionUpdateById(m, id)
+	err := dao.UpdateById(m, id)
 	log.Println(sample)
 	assert.NoError(t,err)
 }
 
-func TestOrderDao_UpdateByParam(t *testing.T) {
-	dao, sample := initial()
-	m:=map[string]string{
-		"Id" :strconv.Itoa(sample.ID),
-		"order_No":sample.OrderNo,
-		"user_name" :sample.UserName,
-		"amount" :strconv.FormatFloat(sample.Amount, 'E', -1, 64),
-		"status" :sample.Status,
-		"file_url":sample.FileUrl,
-	}
-	sample = model.DemoOrder{ UserName: "raious", Amount: 666}
-	paramName :="user_name"
-	err := dao.UpdateByParam(m,paramName,&sample)
-	assert.NoError(t,err)
-}

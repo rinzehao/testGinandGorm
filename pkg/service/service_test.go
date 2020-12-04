@@ -16,14 +16,14 @@ func Init() *OrderService {
 	return testService
 }
 
-func TestOrderService_DeleteOrderById(t *testing.T) {
+func TestDeleteOrderById(t *testing.T) {
 	testService :=Init()
 	id :="16"
 	err := testService.DeleteOrderById(id)
 	assert.NoError(t,err)
 }
 
-func TestOrderService_QueryOrderById(t *testing.T) {
+func TestQueryOrderById(t *testing.T) {
 	testService :=Init()
 	id :="15"
 	order,err := testService.QueryOrderById(id)
@@ -31,7 +31,7 @@ func TestOrderService_QueryOrderById(t *testing.T) {
 	assert.NoError(t,err)
 }
 
-func TestOrderService_UpdateByOrderNo(t *testing.T) {
+func TestUpdateByOrderNo(t *testing.T) {
 	testService :=Init()
 	sample := model.DemoOrder{OrderNo:"16", UserName: "raious", Amount: 444, Status: "over"}
 	err := testService.UpdateByOrderNo(&sample)
@@ -39,25 +39,25 @@ func TestOrderService_UpdateByOrderNo(t *testing.T) {
 }
 
 
-func TestOrderService_CreateOrderByOrderNo(t *testing.T) {
+func TestCreateOrderByOrderNo(t *testing.T) {
 	testService :=Init()
 	sample := model.DemoOrder{ID: 16, OrderNo:"16",UserName: "raious", Amount: 444, Status: "over", FileUrl: ".././pkg/dao"}
-	err := testService.CreateOrderByOrderNo(&sample)
+	err := testService.CreateOrder(&sample)
 	assert.NoError(t,err)
 }
 
-func TestOrderService_QueryOrders(t *testing.T) {
+func TestQueryOrders(t *testing.T) {
 	testService :=Init()
 	orders,err := testService.QueryOrders()
 	assert.NoError(t,err)
 	assert.NotEmpty(t,orders)
 }
 
-func TestOrderService_QuerySortedOrdersByUserName(t *testing.T) {
+func TestSortedOrdersByUserName(t *testing.T) {
 	testService :=Init()
 	sample := model.DemoOrder{ID: 16, UserName: "raious", Amount: 444, Status: "over", FileUrl: ".././pkg/dao"}
 	userName:= sample.UserName
-	orders, err := testService.QuerySortedOrdersByUserName(userName)
+	orders, err := testService.QueryOrdersByName(userName)
 	assert.NotEmpty(t,orders)
 	assert.NoError(t,err)
 }
@@ -72,6 +72,6 @@ func TestOrderService_DownLoadExcel(t *testing.T) {
 func TestOrderService_GetUploadUrlAndSave(t *testing.T) {
 	testService :=Init()
 	id,url :="16",".././test"
-	err := testService.GetUploadUrlAndSave(id,url)
+	err := testService.UpdateUrlById(id,url)
 	assert.NoError(t,err)
 }

@@ -65,7 +65,7 @@ func (handler *OrderHandler) CreateOrder(c *gin.Context) {
 		fmt.Println(err)
 		fmt.Println("创建条目失败：JSON绑定失败")
 	}
-	if err := handler.orderService.CreateOrderByOrderNo(&order); err != nil {
+	if err := handler.orderService.CreateOrder(&order); err != nil {
 		c.AbortWithStatus(404)
 		fmt.Println(err)
 		fmt.Println("创建条目失败：service失败")
@@ -94,7 +94,7 @@ func (handler *OrderHandler) GetSortedOrders(c *gin.Context) {
 		fmt.Println("模糊查找条目失败:JSO你绑定错误")
 	}
 	userName := order.UserName
-	if orders, err = handler.orderService.QuerySortedOrdersByUserName(userName); err != nil {
+	if orders, err = handler.orderService.QueryOrdersByName(userName); err != nil {
 		c.AbortWithStatus(404)
 		fmt.Println(err)
 		fmt.Println("模糊查找条目失败：sql查询出错")
@@ -123,9 +123,9 @@ func (handler *OrderHandler) DownLoadExcel(c *gin.Context) {
 //获取文件url并保存
 func (handler *OrderHandler) GetUploadUrlAndUpdate(c *gin.Context) {
 	id := c.Params.ByName("id")
-	str := singleFileUpload(c)
+	url := singleFileUpload(c)
 	fmt.Println("id:" + id)
-	if err := handler.orderService.GetUploadUrlAndSave(id, str); err != nil {
+	if err := handler.orderService.UpdateUrlById(id, url); err != nil {
 		fmt.Println(err)
 		panic("上传错误")
 	}

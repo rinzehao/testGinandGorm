@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"github.com/tealeg/xlsx"
 	"strconv"
@@ -34,19 +35,17 @@ func (service *OrderService) QueryOrderById(id string) (order *model.DemoOrder, 
 }
 
 func (service *OrderService) UpdateByOrderNo(order *model.DemoOrder) error {
-	var err error
-	paramName :="order_No"
-	m :=StructOrderToMap(order)
-	if err = service.orderDao.UpdateByParam(m,paramName,order); err != nil {
+	orderNo :=order.OrderNo
+	m :=MapTransform(order)
+	if err := service.orderDao.UpdateByNo(orderNo,m); err != nil {
 		return err
 	}
-	return err
+	return nil
 }
 
-func (service *OrderService) CreateOrderByOrderNo(order *model.DemoOrder) error {
-	m:=StructOrderToMap(order)
-	queryParam :="order_No"
-	if isExit, err := service.orderDao.QueryOrderIsExist(m ,queryParam,order); isExit == false {
+func (service *OrderService) CreateOrder(order *model.DemoOrder) error {
+	orderNo :=order.OrderNo
+	if order,err := service.orderDao.QueryOrderByNo(orderNo); err == gorm.ErrRecordNotFound {
 		service.orderDao.CreateOrder(order)
 	} else {
 		return err
@@ -56,6 +55,7 @@ func (service *OrderService) CreateOrderByOrderNo(order *model.DemoOrder) error 
 
 func (service *OrderService) QueryOrders() (orders []*model.DemoOrder, err error) {
 	//页查询 page为页数 pagesize为单页展示条目数量 默认page=1 pagesize=100
+	//当page的页数小于等于零的时候  offset不生效
 	page, pageSize := 1, 100
 	if orders, err = service.orderDao.QueryOrders(page, pageSize); err != nil {
 		return nil, err
@@ -64,11 +64,10 @@ func (service *OrderService) QueryOrders() (orders []*model.DemoOrder, err error
 }
 
 //根据user_name做模糊查找、根据创建时间、金额排序
-func (service *OrderService) QuerySortedOrdersByUserName(userName string) (orders []*model.DemoOrder, err error) {
-
+func (service *OrderService) QueryOrdersByName(userName string) (orders []*model.DemoOrder, err error) {
 	orderBy := "amount"
 	desc := "DESC"
-	if orders, err = service.orderDao.QuerySortedOrdersByUserName(userName, orderBy, desc); err != nil {
+	if orders, err = service.orderDao.QueryOrdersByName(userName, orderBy, desc); err != nil {
 		return nil, err
 	}
 	return orders, err
@@ -119,28 +118,26 @@ func (service *OrderService) DownLoadExcel(file *xlsx.File) error {
 }
 
 //获取文件url并保存
-func (service *OrderService) GetUploadUrlAndSave(id string, url string) error {
-	fmt.Println("id:" + id)
-	var err error
+func (service *OrderService) UpdateUrlById(id string, url string) error {
 	if len(url) == 0 {
-		return err
+		return nil
 	} else {
-		m :=map[string]string{
+		m :=map[string]interface{}{
 			"file_url" : url,
 		}
-		if err = service.orderDao.TransactionUpdateById(m, id); err != nil {
+		if err := service.orderDao.UpdateById(m, id); err != nil {
 			return err
 		}
 	}
-	return err
+	return nil
 }
 
-func StructOrderToMap(order *model.DemoOrder) map[string]string {
-	m :=map[string]string{
-		"Id" :strconv.Itoa(order.ID),
+func MapTransform(order *model.DemoOrder) map[string]interface{} {
+	m :=map[string]interface{}{
+		"Id" :order.ID,
 		"order_No":order.OrderNo,
 		"user_name" :order.UserName,
-		"amount" :strconv.FormatFloat(order.Amount, 'E', -1, 64),
+		"amount" :order.Amount,
 		"status" :order.Status,
 		"file_url":order.FileUrl,
 	}
