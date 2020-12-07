@@ -2,76 +2,79 @@ package service
 
 import (
 	"github.com/stretchr/testify/assert"
-	"github.com/tealeg/xlsx"
-	"testGinandGorm/db"
+	"strconv"
+	"testGinandGorm/common/db"
 	"testGinandGorm/pkg/dao"
 	"testGinandGorm/pkg/model"
 	"testing"
+	"time"
 )
+
+var sample = &model.DemoOrder{OrderNo:time.Now().Format("2006-01-02 15:04:05"),UserName: "raious", Amount: 444, Status: "over", FileUrl: ".././pkg/dao"}
 
 func Init() *OrderService {
 	db := db.DbInit()
+	db.LogMode(true)
 	testDao := dao.NewOrderDao(db)
-	testService := NewService(testDao)
-	return testService
+	return NewService(testDao)
 }
 
 func TestDeleteOrderById(t *testing.T) {
 	testService :=Init()
-	id :="16"
-	err := testService.DeleteOrderById(id)
-	assert.NoError(t,err)
+	assert.NoError(t,testService.DeleteOrderById(strconv.Itoa(sample.ID)))
 }
 
 func TestQueryOrderById(t *testing.T) {
 	testService :=Init()
-	id :="15"
-	order,err := testService.QueryOrderById(id)
-	assert.NotEmpty(t,order)
+	order,err := testService.QueryOrderById("15")
 	assert.NoError(t,err)
+	assert.NotEmpty(t,order)
 }
 
 func TestUpdateByOrderNo(t *testing.T) {
 	testService :=Init()
-	sample := model.DemoOrder{OrderNo:"16", UserName: "raious", Amount: 444, Status: "over"}
-	err := testService.UpdateByOrderNo(&sample)
-	assert.NoError(t,err)
+	m:=map[string]interface{}{
+		"Id" :sample.ID,
+		"order_No":sample.OrderNo,
+		"user_name" :sample.UserName,
+		"amount" :sample.Amount,
+		"status" :sample.Status,
+		"file_url":sample.FileUrl,
+	}
+	assert.NoError(t,testService.UpdateByOrderNo(m, sample.OrderNo))
+	m = map[string]interface{}{
+		"order_No":sample.OrderNo,
+		"user_name" :sample.UserName,
+		"amount" :sample.Amount,
+		"file_url":sample.FileUrl,
+	}
+	assert.NoError(t,testService.UpdateByOrderNo(m, sample.OrderNo))
 }
-
 
 func TestCreateOrderByOrderNo(t *testing.T) {
 	testService :=Init()
-	sample := model.DemoOrder{ID: 16, OrderNo:"16",UserName: "raious", Amount: 444, Status: "over", FileUrl: ".././pkg/dao"}
-	err := testService.CreateOrder(&sample)
-	assert.NoError(t,err)
+	assert.NoError(t,testService.CreateOrder(sample))
 }
 
 func TestQueryOrders(t *testing.T) {
 	testService :=Init()
-	orders,err := testService.QueryOrders()
+	orders,err := testService.QueryOrders(1,100)
 	assert.NoError(t,err)
 	assert.NotEmpty(t,orders)
 }
 
-func TestSortedOrdersByUserName(t *testing.T) {
+func TestQueryOrdersByName(t *testing.T) {
 	testService :=Init()
-	sample := model.DemoOrder{ID: 16, UserName: "raious", Amount: 444, Status: "over", FileUrl: ".././pkg/dao"}
-	userName:= sample.UserName
-	orders, err := testService.QueryOrdersByName(userName)
+	orders, err := testService.QueryOrdersByName("raious","amount","desc")
+	assert.NoError(t,err)
 	assert.NotEmpty(t,orders)
-	assert.NoError(t,err)
 }
 
-func TestOrderService_DownLoadExcel(t *testing.T) {
+func TestUpdateUrlById(t *testing.T) {
 	testService :=Init()
-	var file =xlsx.NewFile()
-	err := testService.DownLoadExcel(file)
-	assert.NoError(t,err)
-}
-
-func TestOrderService_GetUploadUrlAndSave(t *testing.T) {
-	testService :=Init()
-	id,url :="16",".././test"
-	err := testService.UpdateUrlById(id,url)
+	m := map[string]interface{}{
+		"file_url": ".././test",
+	}
+	err := testService.UpdateUrlById(m,"16")
 	assert.NoError(t,err)
 }

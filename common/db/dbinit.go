@@ -8,9 +8,6 @@ import (
 	"testGinandGorm/pkg/model"
 )
 
-//var Db *gorm.DB
-//var err error
-
 func DbInit() *gorm.DB {
 	var Db *gorm.DB
 	var err error

@@ -2,7 +2,7 @@ package dao
 
 import (
 	"github.com/jinzhu/gorm"
-	_ "testGinandGorm/db"
+	_ "testGinandGorm/common/db"
 	"testGinandGorm/pkg/model"
 )
 
@@ -14,7 +14,7 @@ func NewOrderDao(Db *gorm.DB) *OrderDao {
 	return &OrderDao{db: Db}
 }
 
-func (dao *OrderDao) CreateOrder(s *model.DemoOrder) (err error) {
+func (dao *OrderDao) CreateOrder(s *model.DemoOrder) error {
 	return dao.db.Create(s).Error
 }
 
@@ -32,12 +32,6 @@ func (dao *OrderDao) DeleteById(id string) error {
 //传入map ->不可省略Where().否则会对所有条目进行更新
 //传入map ->更新的字段为map内存在的字段
 
-
-func (dao *OrderDao) UpdateByNoStruct(order *model.DemoOrder) error {
-	return dao.db.Model(&model.DemoOrder{}).Where("order_no = ?",order.OrderNo).Update(order).Error
-}
-
-// todo struct ->map
 func (dao *OrderDao ) UpdateByNo(no string,m map[string]interface{}) error  {
 	return dao.db.Model(&model.DemoOrder{}).Where("order_no = ?", no).Update(m).Error
 }
@@ -58,13 +52,12 @@ func (dao *OrderDao) QueryOrders(page, pageSize int) (orders []*model.DemoOrder,
 	return orders, dao.db.Offset((page - 1) * pageSize).Limit(pageSize).Find(&orders).Error
 }
 
-// todo QueryOrdersByUserName
+
 func (dao *OrderDao) QueryOrdersByName(userName, orderBy, desc string) (orders []*model.DemoOrder, err error) {
 	return orders, dao.db.Where("user_name LIKE ?", "%"+userName+"%").Order(orderBy + " " + desc).Find(&orders).Error
 }
 
 
-// todo 改成Updates
 //Update Updates Save的区别
 func (dao *OrderDao) UpdateById(m map[string]interface{}, id string) error {
 	tx := dao.db.Begin()
