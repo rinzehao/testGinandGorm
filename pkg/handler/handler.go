@@ -200,7 +200,6 @@ func (handler *OrderHandler) UploadAndUpdate(c *gin.Context) {
 }
 
 //下载DemoOrder,以excel形式导出
-// todo 移到handler
 func (handler *OrderHandler) excelHandler(sheetName, outPutFileUrl string) error {
 	file := xlsx.NewFile()
 	sheet, err := file.AddSheet(sheetName)
