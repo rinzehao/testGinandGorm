@@ -52,7 +52,12 @@ func (service *OrderService) QueryOrdersByName(userName, orderBy, desc string) (
 	return service.orderDao.QueryOrdersByName(userName, orderBy, desc)
 }
 
-//获取文件url并保存
-func (service *OrderService) UpdateUrlById(m map[string]interface{}, id string) error {
-	return service.orderDao.UpdateById(m, id)
+////获取文件url并保存
+//func (service *OrderService) UpdateUrlById(m map[string]interface{}, id string) error {
+//	return service.orderDao.UpdateById(m, id)
+//}
+
+//获取改变信息并保存
+func (service *OrderService) UpdateById(m map[string]interface{}, id string) error {
+	return service.orderDao.UpdateById(m,id)
 }

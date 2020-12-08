@@ -50,20 +50,18 @@ func TestQueryOrderById(t *testing.T) {
 	dao := initial()
 	sample,err :=dao.QueryOrderById(strconv.Itoa(sample.ID))
 	assert.Error(t,err)
-	sample.ID=1
-	sample,err =dao.QueryOrderById(strconv.Itoa(sample.ID))
-	assert.NoError(t,err)
+	assert.Empty(t,sample)
 }
 
 func TestQueryOrdersByName(t *testing.T) {
 	dao := initial()
-	orders, err := dao.QueryOrdersByName(sample.UserName, "amount", "desc")
+	_, err := dao.QueryOrdersByName(sample.UserName, "amount", "desc")
 	assert.NoError(t,err)
-	assert.NotEmpty(t,orders)
 }
 
 func TestQueryOrders(t *testing.T) {
 	dao := initial()
+	assert.NoError(t, dao.CreateOrder(sample))
 	page, pageSize := 0, 10
 	orders, err := dao.QueryOrders(page, pageSize)
 	assert.NoError(t,err)
@@ -80,6 +78,7 @@ func TestQueryOrders(t *testing.T) {
 	orders, err = dao.QueryOrders(page,pageSize)
 	assert.NoError(t,err)
 	assert.NotEmpty(t,orders)
+	assert.NoError(t,dao.DeleteById(strconv.Itoa(sample.ID)))
 }
 
 func TestUpdateById(t *testing.T) {
@@ -88,4 +87,5 @@ func TestUpdateById(t *testing.T) {
 		"file_url": ".././test",
 	}, "16"))
 }
+
 

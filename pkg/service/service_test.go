@@ -19,6 +19,11 @@ func Init() *OrderService {
 	return NewService(testDao)
 }
 
+func TestCreateOrderByOrderNo(t *testing.T) {
+	testService :=Init()
+	assert.NoError(t,testService.CreateOrder(sample))
+}
+
 func TestDeleteOrderById(t *testing.T) {
 	testService :=Init()
 	assert.NoError(t,testService.DeleteOrderById(strconv.Itoa(sample.ID)))
@@ -26,9 +31,9 @@ func TestDeleteOrderById(t *testing.T) {
 
 func TestQueryOrderById(t *testing.T) {
 	testService :=Init()
-	order,err := testService.QueryOrderById("15")
-	assert.NoError(t,err)
-	assert.NotEmpty(t,order)
+	order,err := testService.QueryOrderById(strconv.Itoa(sample.ID))
+	assert.Error(t,err)
+	assert.Empty(t,order)
 }
 
 func TestUpdateByOrderNo(t *testing.T) {
@@ -51,23 +56,16 @@ func TestUpdateByOrderNo(t *testing.T) {
 	assert.NoError(t,testService.UpdateByOrderNo(m, sample.OrderNo))
 }
 
-func TestCreateOrderByOrderNo(t *testing.T) {
-	testService :=Init()
-	assert.NoError(t,testService.CreateOrder(sample))
-}
-
 func TestQueryOrders(t *testing.T) {
 	testService :=Init()
-	orders,err := testService.QueryOrders(1,100)
+	_,err := testService.QueryOrders(1,100)
 	assert.NoError(t,err)
-	assert.NotEmpty(t,orders)
 }
 
 func TestQueryOrdersByName(t *testing.T) {
 	testService :=Init()
-	orders, err := testService.QueryOrdersByName("raious","amount","desc")
+	_, err := testService.QueryOrdersByName("raious","amount","desc")
 	assert.NoError(t,err)
-	assert.NotEmpty(t,orders)
 }
 
 func TestUpdateUrlById(t *testing.T) {
@@ -75,6 +73,6 @@ func TestUpdateUrlById(t *testing.T) {
 	m := map[string]interface{}{
 		"file_url": ".././test",
 	}
-	err := testService.UpdateUrlById(m,"16")
+	err := testService.UpdateById(m,"16")
 	assert.NoError(t,err)
 }

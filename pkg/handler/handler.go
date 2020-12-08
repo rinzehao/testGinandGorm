@@ -186,7 +186,7 @@ func (handler *OrderHandler) UploadAndUpdate(c *gin.Context) {
 	m := map[string]interface{}{
 		"file_url": singleFileUpload(c),
 	}
-	if err := handler.orderService.UpdateUrlById(m, id); err != nil {
+	if err := handler.orderService.UpdateById(m, id); err != nil {
 		c.JSON(http.StatusBadRequest, &common.HttpResp{
 			ErrCode: "109",
 			ErrMsg:  "上传错误",
