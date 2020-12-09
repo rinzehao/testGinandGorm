@@ -11,7 +11,10 @@ service Greeter {
 
 service Order {
   rpc Test (HelloRequest) returns (HelloReply) {}
-  rpc QueryOrderById (QueryRequest) returns (QueryReply){}
+  rpc QueryOrderById (ID) returns (OrderModel){}
+  rpc CreateOrder (OrderModel) returns (ID){}
+  rpc DeleteOrder (ID) returns (ID){}
+  rpc UpdateOrder (OrderModel) returns (OrderModel){}
 }
 
 // The request message containing the user's name.
@@ -25,11 +28,12 @@ message HelloReply {
 }
 
 //自己定义试试看
-message QueryRequest {
+message ID {
   string id = 1;
 }
 
-message  QueryReply {
+
+message OrderModel {
   int32   id = 1;
   string orderNo =2;
   string userName =3;

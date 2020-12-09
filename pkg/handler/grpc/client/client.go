@@ -56,9 +56,44 @@ func main() {
 	}
 	log.Println(res3)
 
-	res4, err4 := c2.QueryOrderById(context.Background(), &pb.QueryRequest{Id: "239"})
+	res4, err4 := c2.QueryOrderById(context.Background(), &pb.ID{Id: "239"})
 	if err4 != nil {
 		log.Fatalln(err4)
 	}
 	log.Println(res4)
+
+	//todo  test Create
+	res6, err6 := c2.CreateOrder(context.Background(), &pb.OrderModel{
+		Id:       2,
+		OrderNo:  "2",
+		UserName: "2",
+		Amount:   22.22,
+		Status:   "完成",
+		FileUrl:  "../././南山志志雄",
+	})
+	if err6 != nil {
+		log.Fatalln(err6)
+	}
+	log.Println(res6)
+
+	//todo test Update
+	res8, err8 := c2.UpdateOrder(context.Background(), &pb.OrderModel{
+		Id:       2,
+		OrderNo:  "2",
+		UserName: "2",
+		Amount:   15.00,
+		Status:   "未完成",
+		FileUrl:  "南山必胜客",
+	})
+	if err8 != nil {
+		log.Fatalln(err6)
+	}
+	log.Println(res8)
+
+	//todo test Delete
+	res7, err7 := c2.DeleteOrder(context.Background(), &pb.ID{Id: "226"})
+	if err7 != nil {
+		log.Fatalln(err6)
+	}
+	log.Println(res7)
 }

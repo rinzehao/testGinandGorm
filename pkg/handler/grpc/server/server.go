@@ -23,12 +23,12 @@ func main() {
 	Db := db.DbInit()
 	orderDao := dao.NewOrderDao(Db)
 	orderService := service.NewService(orderDao)
-	go test1()
-	go test2(orderService)
+	go service1()
+	go service2(orderService)
 	select {}
 }
 
-func test1() {
+func service1() {
 	listen, err := net.Listen("tcp", Address)
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)
@@ -42,7 +42,7 @@ func test1() {
 	}
 }
 
-func test2(orderService *service.OrderService) {
+func service2(orderService *service.OrderService) {
 	listen, err := net.Listen("tcp", Address2)
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)
