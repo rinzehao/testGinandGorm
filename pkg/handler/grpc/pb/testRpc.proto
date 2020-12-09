@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package pb;
+
+// The greeting service definition.
+service Greeter {
+  // Sends a greeting
+  rpc SayHello (HelloRequest) returns (HelloReply) {}
+  rpc SayHelloAgain (HelloRequest) returns (HelloReply){}
+}
+
+service Order {
+  rpc Test (HelloRequest) returns (HelloReply) {}
+  rpc QueryOrderById (QueryRequest) returns (QueryReply){}
+}
+
+// The request message containing the user's name.
+message HelloRequest {
+  string name = 1;
+}
+
+// The response message containing the greetings
+message HelloReply {
+  string message = 1;
+}
+
+//自己定义试试看
+message QueryRequest {
+  string id = 1;
+}
+
+message  QueryReply {
+  int32   id = 1;
+  string orderNo =2;
+  string userName =3;
+  float amount  =4;
+  string status =5;
+  string fileUrl =6;
+}
