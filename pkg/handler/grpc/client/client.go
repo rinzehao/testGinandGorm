@@ -1,99 +1,190 @@
 package main
 
 import (
+	"bufio"
+	"fmt"
+	"log"
+	"os"
+	"strconv"
+	"strings"
+	"testGinandGorm/pkg/handler/grpc/pb"
+	"time"
+
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
-	"log"
-	"testGinandGorm/pkg/handler/grpc/pb"
 )
 
 const (
-	//Address = "0.0.0.0:9090"
-	Address  = "127.0.0.1:3030"
-	Address2 = "127.0.0.1:3031"
+	host = "127.0.0.1:3031"
 )
 
 func main() {
-	conn, err := grpc.Dial(Address, grpc.WithInsecure())
+	conn, err := grpc.Dial(host, grpc.WithInsecure())
 	if err != nil {
-		log.Fatalln(err)
+		log.Fatalf("Did not connect to the server: %v", err)
 	}
 	defer conn.Close()
+	crudClient := pb.NewOrderClient(conn)
 
-	//初始化客户端
-	c := pb.NewGreeterClient(conn)
-	// 调用 SayHello 方法
-	res, err := c.SayHello(context.Background(), &pb.HelloRequest{Name: "Hello World"})
-	if err != nil {
-		log.Fatalln(err)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	for {
+		fmt.Println("OrderDemo CRUD")
+		fmt.Print(" 1 : create \n 2 : read \n 3 : update \n 4: delete \n 5: 退出 \n Enter choice :  ")
+
+		choice := bufio.NewReader(os.Stdin)
+		text, _ := choice.ReadString('\n')
+
+		switch text {
+		case "1\n":
+			fmt.Print("\nOrder_ID: ")
+			idR := bufio.NewReader(os.Stdin)
+			orderID, _ := idR.ReadString('\n')
+			orderID = strings.Trim(orderID, "\n")
+			orderId, _ := strconv.Atoi(orderID)
+
+			fmt.Print("\nOrder_NO: ")
+			noR := bufio.NewReader(os.Stdin)
+			no, _ := noR.ReadString('\n')
+			no = strings.Trim(no, "\n")
+
+			fmt.Print("\nuser_name: ")
+			nameR := bufio.NewReader(os.Stdin)
+			name, _ := nameR.ReadString('\n')
+			name = strings.Trim(name, "\n")
+
+			fmt.Print("\namount: ")
+			amountR := bufio.NewReader(os.Stdin)
+			amount, _ := amountR.ReadString('\n')
+			amount = strings.Trim(amount, "\n")
+			orderAmount, _ := strconv.ParseFloat(amount, 32)
+
+			fmt.Print("\nstatus: ")
+			statusR := bufio.NewReader(os.Stdin)
+			status, _ := statusR.ReadString('\n')
+			status = strings.Trim(status, "\n")
+
+			fmt.Print("\nfile_Url: ")
+			urlR := bufio.NewReader(os.Stdin)
+			fileUrl, _ := urlR.ReadString('\n')
+			fileUrl = strings.Trim(fileUrl, "\n")
+
+			order, err := crudClient.CreateOrder(ctx, &pb.OrderModel{
+				Id:       int32(orderId),
+				OrderNo:  no,
+				UserName: name,
+				Amount:   float32(orderAmount),
+				Status:   status,
+				FileUrl:  fileUrl,
+			})
+			if err != nil {
+				log.Fatalf("创建订单失败: %v", err)
+			}
+			fmt.Println("\n插入成功，ID ： ", order.Id)
+
+		case "2\n":
+			fmt.Print("\n请输入ID  : ")
+			idR := bufio.NewReader(os.Stdin)
+			orderID, _ := idR.ReadString('\n')
+			orderID = strings.Trim(orderID, "\n")
+
+			order, err := crudClient.QueryOrderById(ctx, &pb.ID{Id: orderID})
+			if err != nil {
+				log.Fatalf("Error in getting product: %v", err)
+			}
+			fmt.Println("\n 查询成功!")
+			fmt.Println(
+				"order_No:", order.OrderNo, "\n",
+				" user_Name: ", order.UserName, "\n",
+				"order_amount : ", order.Amount, "\n",
+				"order_status :", order.Status, "\n",
+				"order_fileUrl :", order.FileUrl)
+
+		case "3\n":
+
+			fmt.Print("\n请输入ID  : ")
+			qidR := bufio.NewReader(os.Stdin)
+			queryID, _ := qidR.ReadString('\n')
+			queryID = strings.Trim(queryID, "\n")
+
+			order, err := crudClient.QueryOrderById(ctx, &pb.ID{Id: queryID})
+			if err != nil {
+				log.Fatalf("Error in getting product: %v", err)
+			}
+			fmt.Println("\n 存在订单")
+			fmt.Println(
+				"order_No:", order.OrderNo, "\n",
+				" user_Name: ", order.UserName, "\n",
+				"order_amount : ", order.Amount, "\n",
+				"order_status :", order.Status, "\n",
+				"order_fileUrl :", order.FileUrl)
+
+			fmt.Println("\n ————修改订单————")
+
+			fmt.Print("\nOrder_ID: ")
+			idR := bufio.NewReader(os.Stdin)
+			orderID, _ := idR.ReadString('\n')
+			orderID = strings.Trim(orderID, "\n")
+			orderId, _ := strconv.Atoi(orderID)
+
+			fmt.Print("\nOrder_NO: ")
+			noR := bufio.NewReader(os.Stdin)
+			no, _ := noR.ReadString('\n')
+			no = strings.Trim(no, "\n")
+
+			fmt.Print("\nuser_name: ")
+			nameR := bufio.NewReader(os.Stdin)
+			name, _ := nameR.ReadString('\n')
+			name = strings.Trim(name, "\n")
+
+			fmt.Print("\namount: ")
+			amountR := bufio.NewReader(os.Stdin)
+			amount, _ := amountR.ReadString('\n')
+			amount = strings.Trim(amount, "\n")
+			orderAmount, _ := strconv.ParseFloat(amount, 32)
+
+			fmt.Print("\nstatus: ")
+			statusR := bufio.NewReader(os.Stdin)
+			status, _ := statusR.ReadString('\n')
+			status = strings.Trim(status, "\n")
+
+			fmt.Print("\nfile_Url: ")
+			urlR := bufio.NewReader(os.Stdin)
+			fileUrl, _ := urlR.ReadString('\n')
+			fileUrl = strings.Trim(fileUrl, "\n")
+
+			updateOrder, err := crudClient.UpdateOrder(ctx, &pb.OrderModel{
+				Id:       int32(orderId),
+				OrderNo:  no,
+				UserName: name,
+				Amount:   float32(orderAmount),
+				Status:   status,
+				FileUrl:  fileUrl,
+			})
+			if err != nil {
+				log.Fatalf("更新订单失败: %v", err)
+			}
+			fmt.Println("\n订单：", updateOrder.Id, " 更新成功")
+
+		case "4\n":
+
+			fmt.Print("\n————删除订单，请输入ID————")
+			fmt.Print("\nID: ")
+			idR := bufio.NewReader(os.Stdin)
+			id, _ := idR.ReadString('\n')
+			id = strings.Trim(id, "\n")
+			product, _ := crudClient.DeleteOrder(ctx, &pb.ID{Id: id})
+			if product != nil {
+				log.Printf("\n订单 ID ： %s 删除失败 ", product.Id)
+			} else {
+				log.Printf("删除成功！")
+			}
+		case "5\n":
+			goto End
+		default:
+			fmt.Println("\n操 作 异 常!")
+		}
 	}
-	log.Println(res.Message)
-
-	res2, err2 := c.SayHello(context.Background(), &pb.HelloRequest{Name: "你好 世界"})
-	if err2 != nil {
-		log.Fatalln(err2)
-	}
-	log.Println(res2.Message)
-
-	res5, err5 := c.SayHelloAgain(context.Background(), &pb.HelloRequest{Name: "你好 世界ooo "})
-	if err5 != nil {
-		log.Fatalln(err5)
-	}
-	log.Println(res5.Message)
-
-	//调用OrderService的方法
-
-	conn2, err2 := grpc.Dial(Address2, grpc.WithInsecure())
-	if err2 != nil {
-		log.Fatalln(err)
-	}
-	defer conn2.Close()
-	c2 := pb.NewOrderClient(conn2)
-
-	res3, err3 := c2.Test(context.Background(), &pb.HelloRequest{Name: "239"})
-	if err3 != nil {
-		log.Fatalln(err3)
-	}
-	log.Println(res3)
-
-	res4, err4 := c2.QueryOrderById(context.Background(), &pb.ID{Id: "239"})
-	if err4 != nil {
-		log.Fatalln(err4)
-	}
-	log.Println(res4)
-
-	//todo  test Create
-	res6, err6 := c2.CreateOrder(context.Background(), &pb.OrderModel{
-		Id:       2,
-		OrderNo:  "2",
-		UserName: "2",
-		Amount:   22.22,
-		Status:   "完成",
-		FileUrl:  "../././南山志志雄",
-	})
-	if err6 != nil {
-		log.Fatalln(err6)
-	}
-	log.Println(res6)
-
-	//todo test Update
-	res8, err8 := c2.UpdateOrder(context.Background(), &pb.OrderModel{
-		Id:       2,
-		OrderNo:  "2",
-		UserName: "2",
-		Amount:   15.00,
-		Status:   "未完成",
-		FileUrl:  "南山必胜客",
-	})
-	if err8 != nil {
-		log.Fatalln(err6)
-	}
-	log.Println(res8)
-
-	//todo test Delete
-	res7, err7 := c2.DeleteOrder(context.Background(), &pb.ID{Id: "226"})
-	if err7 != nil {
-		log.Fatalln(err6)
-	}
-	log.Println(res7)
+ End:
 }

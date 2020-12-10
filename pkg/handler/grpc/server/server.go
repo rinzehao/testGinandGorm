@@ -14,36 +14,20 @@ import (
 )
 
 const (
-	//Address = "0.0.0.0:9090"
-	Address  = "127.0.0.1:3030"
-	Address2 = "127.0.0.1:3031"
+	Address = "127.0.0.1:3031"
 )
 
 func main() {
 	Db := db.DbInit()
 	orderDao := dao.NewOrderDao(Db)
 	orderService := service.NewService(orderDao)
-	go service1()
-	go service2(orderService)
+	//go service1()
+	go crudService(orderService)
 	select {}
 }
 
-func service1() {
+func crudService(orderService *service.OrderService) {
 	listen, err := net.Listen("tcp", Address)
-	if err != nil {
-		log.Fatalf("Failed to listen: %v", err)
-	}
-	s := grpc.NewServer()
-	pb.RegisterGreeterServer(s, &rpcHandler.Server{})
-	// Register reflection service on gRPC server.
-	reflection.Register(s)
-	if err := s.Serve(listen); err != nil {
-		log.Fatalf("failed to serve: %v", err)
-	}
-}
-
-func service2(orderService *service.OrderService) {
-	listen, err := net.Listen("tcp", Address2)
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)
 	}
@@ -55,3 +39,5 @@ func service2(orderService *service.OrderService) {
 		log.Fatalf("failed to serve: %v", err)
 	}
 }
+
+

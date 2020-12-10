@@ -41,7 +41,8 @@ func (handler *OrderHandler) QueryOrderById(c context.Context, in *pb.ID) (reply
 	}
 	order, err := handler.orderService.QueryOrderById(id)
 	if err != nil {
-		return nil, err
+		status.Error(codes.InvalidArgument, "订单不存在")
+		return nil,err
 	}
 	log.Print(order)
 	reply =new(pb.OrderModel)
@@ -77,11 +78,12 @@ func (handler *OrderHandler) DeleteOrder(ctx context2.Context, in *pb.ID) (*pb.I
 		return nil, nil
 	}
 	in.Id="/"
-	err := handler.orderService.DeleteOrderById(id)
-	if err != nil {
-		return in, err
+	if err := handler.orderService.DeleteOrderById(id) ; err != nil {
+		status.Error(codes.InvalidArgument, "删除失败")
+		return in,err
 	}
 	in.Id=id
+
 	return in, nil
 }
 
@@ -95,7 +97,7 @@ func (handler *OrderHandler) UpdateOrder(ctx context2.Context, orderModel *pb.Or
 		"file_url":  orderModel.FileUrl,
 	}
 	if err := handler.orderService.UpdateById(m,strconv.Itoa(int(orderModel.Id))); err != nil {
-		status.Error(codes.InvalidArgument, "插入失败")
+		status.Error(codes.InvalidArgument, "更新成功")
 		return orderModel,err
 	}
 	return orderModel,nil
