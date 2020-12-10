@@ -1,4 +1,4 @@
-package rpcHandler
+package rpc_handler
 
 import (
 	context2 "context"

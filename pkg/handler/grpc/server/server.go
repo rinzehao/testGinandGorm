@@ -9,7 +9,7 @@ import (
 	"testGinandGorm/common/db"
 	"testGinandGorm/pkg/dao"
 	"testGinandGorm/pkg/handler/grpc/pb"
-	"testGinandGorm/pkg/handler/grpc/server/rpcHandler"
+	"testGinandGorm/pkg/handler/grpc/server/rpc-handler"
 	"testGinandGorm/pkg/service"
 )
 
@@ -21,7 +21,6 @@ func main() {
 	Db := db.DbInit()
 	orderDao := dao.NewOrderDao(Db)
 	orderService := service.NewService(orderDao)
-	//go service1()
 	go crudService(orderService)
 	select {}
 }
@@ -33,7 +32,7 @@ func crudService(orderService *service.OrderService) {
 	}
 	s2 := grpc.NewServer()
 	// 服务注册
-	pb.RegisterOrderServer(s2, rpcHandler.NewHandler(orderService))
+	pb.RegisterOrderServer(s2, rpc_handler.NewHandler(orderService))
 	reflection.Register(s2)
 	if err := s2.Serve(listen); err != nil {
 		log.Fatalf("failed to serve: %v", err)
