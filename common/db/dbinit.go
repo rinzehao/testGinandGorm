@@ -11,7 +11,8 @@ import (
 func DbInit() *gorm.DB {
 	var Db *gorm.DB
 	var err error
-	Db, err = gorm.Open("mysql", "root:123456@tcp(127.0.0.1:3306)/test_gorm?charset=utf8&parseTime=True&loc=Local")
+	//Db, err = gorm.Open("mysql", "root:123456@tcp(127.0.0.1:3306)/test_gorm?charset=utf8&parseTime=True&loc=Local")
+	Db, err = gorm.Open("mysql", "root:123456@tcp(127.0.0.1:10086)/test?charset=utf8&parseTime=True&loc=Local")
 
 	if err != nil {
 		fmt.Println(err)

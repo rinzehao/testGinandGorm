@@ -5,23 +5,13 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"testGinandGorm/common/db"
+	"testGinandGorm/pkg/alert"
 	"testGinandGorm/pkg/dao"
 	"testGinandGorm/pkg/handler"
 	"testGinandGorm/pkg/router"
 	"testGinandGorm/pkg/service"
 )
 
-//func init() {
-//	var Db *gorm.DB
-//	var err error
-//	Db, err = gorm.Open("mysql", "root:123456@tcp(127.0.0.1:3306)/test_gorm?charset=utf8&parseTime=True&loc=Local")
-//
-//	if err != nil {
-//		fmt.Println(err)
-//	}
-//	Db.SingularTable(true)
-//	Db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(&model.Demo_order{})
-//}
 func main() {
 	Db := db.DbInit()
 	orderDao := dao.NewOrderDao(Db)
@@ -33,4 +23,22 @@ func main() {
 }
 
 
-//在分支内进行修改
+func main2() {
+	redisConn := db.RedisInit()
+	Db := db.DbInit()
+	orderDao := dao.NewOrderDao(Db)
+	orderService := service.NewService(orderDao)
+	orderHander := handler.NewHandler(orderService)
+	fmt.Println(orderHander)
+	router.BindRoute(orderHander)
+
+
+	myDB := alert.NewOrderDB(db.DbInit())
+	myDao := alert.NewMyOrderDao(*myDB,&redisConn)
+	myService := alert.NewOrderService(myDao)
+	myHandler := alert.NewOrderHandler(myService)
+	fmt.Println(myHandler)
+	//router.BindRoute(myHandler)
+	db.DbClose(Db)
+}
+

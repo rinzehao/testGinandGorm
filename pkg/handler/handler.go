@@ -14,6 +14,7 @@ import (
 	_ "testGinandGorm/pkg/service"
 )
 
+
 type OrderHandler struct {
 	orderService *service.OrderService
 }
@@ -97,6 +98,15 @@ func (handler *OrderHandler) CreateOrder(c *gin.Context) {
 		})
 		return
 	}
+	ctx := &model.OrderMould{
+		ID:       order.ID,
+		OrderNo:  order.OrderNo,
+		UserName: order.UserName,
+		Amount:   order.Amount,
+		Status:   order.Status,
+		FileUrl:  order.FileUrl,
+	}
+
 	if err := handler.orderService.CreateOrder(&order); err != nil {
 		c.JSON(http.StatusBadRequest, &common.HttpResp{
 			ErrCode: "105",
