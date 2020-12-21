@@ -14,7 +14,6 @@ import (
 	_ "testGinandGorm/pkg/service"
 )
 
-
 type OrderHandler struct {
 	orderService *service.OrderService
 }
@@ -98,14 +97,14 @@ func (handler *OrderHandler) CreateOrder(c *gin.Context) {
 		})
 		return
 	}
-	ctx := &model.OrderMould{
-		ID:       order.ID,
-		OrderNo:  order.OrderNo,
-		UserName: order.UserName,
-		Amount:   order.Amount,
-		Status:   order.Status,
-		FileUrl:  order.FileUrl,
-	}
+	//ctx := &model.OrderMould{
+	//	ID:       order.ID,
+	//	OrderNo:  order.OrderNo,
+	//	UserName: order.UserName,
+	//	Amount:   order.Amount,
+	//	Status:   order.Status,
+	//	FileUrl:  order.FileUrl,
+	//}
 
 	if err := handler.orderService.CreateOrder(&order); err != nil {
 		c.JSON(http.StatusBadRequest, &common.HttpResp{
@@ -186,7 +185,7 @@ func (handler *OrderHandler) UploadAndUpdate(c *gin.Context) {
 		})
 		return
 	}
-	if _, err := handler.orderService.QueryOrderById(id); err !=nil{
+	if _, err := handler.orderService.QueryOrderById(id); err != nil {
 		c.JSON(http.StatusBadRequest, &common.HttpResp{
 			ErrCode: "103",
 			ErrMsg:  "获取条目失败：找不到指定条目",
@@ -205,7 +204,7 @@ func (handler *OrderHandler) UploadAndUpdate(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, &common.HttpResp{
 		Success: true,
-		Data: m,
+		Data:    m,
 	})
 }
 
@@ -282,7 +281,7 @@ func singleFileUpload(c *gin.Context) string {
 	}
 	c.JSON(http.StatusOK, &common.HttpResp{
 		Success: true,
-		Data: dst,
+		Data:    dst,
 	})
 	return dst
 }
