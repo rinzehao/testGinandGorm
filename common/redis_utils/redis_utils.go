@@ -193,6 +193,35 @@ func (c Cache) ScardInt64s(name string) (int64, error) {
 	return v, err
 }
 
+// 存入序列化后的结构体对象
+func (c Cache) SetStruct(name string, v interface{}) (err error) {
+	conn := c.pool.Get()
+	defer conn.Close()
+	var ub []byte
+	ub, err = json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	_, err = conn.Do("SET", name, ub)
+	return err
+}
+
+// 获取反序列化后的结构体对象
+func (c Cache) GetStruct(name string, v interface{}) (err error) {
+	conn := c.pool.Get()
+	defer conn.Close()
+	var vb []byte
+	vb, err = redis.Bytes(conn.Do("Get", name))
+	if err != nil {
+		return err
+	}
+	err = json.Unmarshal(vb, &v)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // 序列化
 func Serialization(value interface{}) ([]byte, error) {
 	if bytes, ok := value.([]byte); ok {

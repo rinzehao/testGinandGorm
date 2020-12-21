@@ -1,7 +1,8 @@
 package alert
 
 import (
-	"github.com/garyburd/redigo/redis"
+	"go.uber.org/zap"
+	"log"
 	"testGinandGorm/common/redis_utils"
 	"testGinandGorm/pkg/model"
 )
@@ -22,12 +23,11 @@ type MyOrderDao struct {
 	cache redis_utils.Cache
 }
 
-func NewMyOrderDao(db OrderDB, cache redis.Conn) *MyOrderDao {
-	return &MyOrderDao{db: db, cache: redis_utils.NewRedisCache(1e10 * 6 * 2)}
+func NewMyOrderDao(db OrderDB, cache redis_utils.Cache) *MyOrderDao {
+	return &MyOrderDao{db: db, cache: cache}
 }
 
 func (dao *MyOrderDao) CreateOrder(s *model.OrderCtx) error {
-
 	return nil
 }
 
@@ -39,8 +39,36 @@ func (dao *MyOrderDao) UpdateByNo(no string, m map[string]interface{}) error {
 	return nil
 }
 
-func (dao *MyOrderDao) QueryOrderById(id string) (*model.OrderMould, error) {
-	return nil, nil
+func (dao *MyOrderDao) QueryOrderById(id string) (order *model.OrderMould, err error) {
+
+	//step1 cache
+	var flag bool
+	if flag, err = dao.cache.Exist(id); err != nil {
+		return nil, err
+	}
+	if flag == false {
+		log.Println("queryTarget form cache fail")
+	}
+	if flag == true {
+		if err = dao.cache.GetStruct(id, order); err != nil {
+			return nil, err
+		}
+	}
+	if order != nil {
+		return order, nil
+	}
+
+	//step2 get db
+	order, err = dao.db.QueryOrderById(id)
+	if err != nil {
+		return nil, err
+	}
+	//step3 set cache
+	if order != nil {
+		dao.cache.SetStruct(id, order)
+	}
+
+	return order, nil
 }
 
 func (dao *MyOrderDao) QueryOrderByNo(no string) (*model.OrderMould, error) {
