@@ -75,7 +75,7 @@ func (handler *OrderHandler) UpdateOrder(c *gin.Context) {
 		})
 		return
 	}
-	if err := handler.orderService.UpdateByOrderNo(mapTransformer(&order), order.OrderNo); err != nil {
+	if err := handler.orderService.UpdateByOrderNo(MapTransformer(&order), order.OrderNo); err != nil {
 		c.JSON(http.StatusBadRequest, &common.HttpResp{
 			ErrCode: "104",
 			ErrMsg:  "更新条目失败",
@@ -97,15 +97,6 @@ func (handler *OrderHandler) CreateOrder(c *gin.Context) {
 		})
 		return
 	}
-	//ctx := &model.OrderMould{
-	//	ID:       order.ID,
-	//	OrderNo:  order.OrderNo,
-	//	UserName: order.UserName,
-	//	Amount:   order.Amount,
-	//	Status:   order.Status,
-	//	FileUrl:  order.FileUrl,
-	//}
-
 	if err := handler.orderService.CreateOrder(&order); err != nil {
 		c.JSON(http.StatusBadRequest, &common.HttpResp{
 			ErrCode: "105",
@@ -286,7 +277,7 @@ func singleFileUpload(c *gin.Context) string {
 	return dst
 }
 
-func mapTransformer(order *model.DemoOrder) map[string]interface{} {
+func MapTransformer(order *model.DemoOrder) map[string]interface{} {
 	m := map[string]interface{}{
 		"Id":        order.ID,
 		"order_No":  order.OrderNo,

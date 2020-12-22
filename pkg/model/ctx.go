@@ -32,3 +32,4 @@ func (o *OrderMould) Status_() string {
 func (o *OrderMould) FileUrl_() string {
 	return o.FileUrl
 }
+

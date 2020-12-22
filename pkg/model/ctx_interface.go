@@ -7,4 +7,8 @@ type OrderCtx interface {
 	Amount_() float64
 	Status_() string
 	FileUrl_() string
+	//Schema() string
+	//Param() interface{}
+	//GetResult() interface{}
+	//SetResult(interface{})
 }
