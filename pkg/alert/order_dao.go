@@ -20,10 +20,10 @@ type OrderDao interface {
 
 type MyOrderDao struct {
 	db    OrderDB
-	cache redis_utils.Cache
+	cache *redis_utils.Cache
 }
 
-func NewMyOrderDao(db OrderDB, cache redis_utils.Cache) *MyOrderDao {
+func NewMyOrderDao(db OrderDB, cache *redis_utils.Cache) *MyOrderDao {
 	return &MyOrderDao{db: db, cache: cache}
 }
 

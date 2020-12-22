@@ -2,7 +2,6 @@ package alert
 
 import (
 	"github.com/jinzhu/gorm"
-	"strconv"
 	"testGinandGorm/pkg/model"
 )
 
@@ -25,7 +24,7 @@ func NewOrderService(dao MyOrderDao) *MyOrderService {
 }
 
 func (service *MyOrderService) Delete(ctx *model.OrderMade) error{
-	return nil
+	return service.orderDao.Delete(ctx.OrderID)
 }
 
 func (service *MyOrderService) QueryID(ctx *model.OrderMade) error{
@@ -58,23 +57,19 @@ func (service *MyOrderService) QueryMulti(ctx *model.OrderMade) error{
 	if err != nil {
 		return err
 	}
-	for _,order :=range orders{
-		ctx.Group[strconv.Itoa(order.ID)]=order
-	}
+	ctx.Group=orders
 	return nil
 }
 
 func (service *MyOrderService) QueryName(ctx *model.OrderMade) error{
-	orders, err := service.orderDao.QueryOrdersByName(ctx.UserName, ctx.OrderBy, ctx.Desc)
+	orders, err := service.orderDao.QueryOrdersByName(ctx.UserName,ctx.OrderBy,ctx.Desc)
 	if err != nil {
 		return err
 	}
-	for _,order :=range orders{
-		ctx.Group[strconv.Itoa(order.ID)]=order
-	}
+	ctx.Group=orders
 	return nil
 }
 
 func (service *MyOrderService) UpdateID(ctx *model.OrderMade) error{
-	return nil
+	return service.orderDao.UpdateById(ctx.OrderID, ctx.UpdateMap)
 }

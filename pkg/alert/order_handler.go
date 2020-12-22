@@ -1,13 +1,11 @@
 package alert
 
 import (
-	"container/list"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/tealeg/xlsx"
-	"golang.org/x/net/xsrftoken"
+	"log"
 	"net/http"
-	"reflect"
 	"strconv"
 	"testGinandGorm/common"
 	_ "testGinandGorm/pkg/dao"
@@ -22,6 +20,29 @@ type MyOrderHandler struct {
 func NewOrderHandler(service *MyOrderService) *MyOrderHandler {
 	return &MyOrderHandler{orderService: service}
 }
+
+func (handler *MyOrderHandler) DeleteOrderById(c *gin.Context) {
+	id := c.Params.ByName("id")
+	if id, _ := strconv.Atoi(id); id == 0 || id < 0 {
+		c.JSON(http.StatusBadRequest, &common.HttpResp{
+			ErrCode: "101",
+			ErrMsg:  "id输入错误",
+		})
+		return
+	}
+	ctx := &model.OrderMade{OrderID: id}
+	if err := handler.orderService.Delete(ctx); err != nil {
+		c.JSON(http.StatusBadRequest, &common.HttpResp{
+			ErrCode: "102",
+			ErrMsg:  "order删除错误",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, &common.HttpResp{
+		Success: true,
+	})
+}
+
 
 func (handler *MyOrderHandler)CreateOrder(c *gin.Context) {
 	var order model.DemoOrder
@@ -172,6 +193,47 @@ func (handler *MyOrderHandler) DownLoadExcel(c *gin.Context) {
 	})
 }
 
+
+//获取文件url并保存
+func (handler *MyOrderHandler) UploadAndUpdate(c *gin.Context) {
+	id := c.Params.ByName("id")
+	if id, _ := strconv.Atoi(id); id == 0 || id < 0 {
+		c.JSON(http.StatusBadRequest, &common.HttpResp{
+			ErrCode: "101",
+			ErrMsg:  "id输入错误",
+		})
+		return
+	}
+	ctx := &model.OrderMade{
+		OrderID: id,
+	}
+	if err := handler.orderService.QueryID(ctx); err != nil {
+		c.JSON(http.StatusBadRequest, &common.HttpResp{
+			ErrCode: "103",
+			ErrMsg:  "获取条目失败：找不到指定条目",
+		})
+		return
+	}
+	m := map[string]interface{}{
+		"file_url": singleFileUpload(c),
+	}
+	ctx = &model.OrderMade{
+		OrderID: id,
+		UpdateMap: m,
+	}
+	if err := handler.orderService.UpdateID(ctx); err != nil {
+		c.JSON(http.StatusBadRequest, &common.HttpResp{
+			ErrCode: "109",
+			ErrMsg:  "上传错误",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, &common.HttpResp{
+		Success: true,
+		Data:    ctx.UpdateMap,
+	})
+}
+
 //下载DemoOrder,以excel形式导出
 func (handler *MyOrderHandler) excelHandler(sheetName, outPutFileUrl string) error {
 	file := xlsx.NewFile()
@@ -188,34 +250,6 @@ func (handler *MyOrderHandler) excelHandler(sheetName, outPutFileUrl string) err
 	if err != nil {
 		return err
 	}
-
-	origin := []string{"123", "345", "abc"}
-	if true {
-		switch reflect.TypeOf(origin).Kind(){
-		case reflect.Slice, reflect.Array:
-			v := reflect.ValueOf(origin)
-			for i :=0 ;i < v.Len();i++ {
-				fmt.Println(v.Index(i))
-			}
-		case reflect.String:
-			v := reflect.ValueOf(origin)
-			fmt.Println(v.String(),"是String类型的")
-		case reflect.Int:
-			v := reflect.ValueOf(origin)
-			t := v.Int()
-			fmt.Println(t,"int type")
-		}
-	}
-	orders := list.New()
-	if true {
-		switch reflect.TypeOf(ctx.Group).Kind(){
-		case reflect.Slice, reflect.Array:
-			v := reflect.ValueOf(origin)
-			for i :=0 ;i < v.Len();i++ {
-				orders.PushBack(v.Index(i))
-			}
-		}
-	}
 	//定义表头
 	headeRow := sheet.AddRow()
 	idCell := headeRow.AddCell()
@@ -231,11 +265,7 @@ func (handler *MyOrderHandler) excelHandler(sheetName, outPutFileUrl string) err
 	fileCell := headeRow.AddCell()
 	fileCell.Value = "File_Url"
 	//写入表单
-	for order := orders.Front(); order != nil; order = order.Next() {
-		fmt.Print(i.Value, " ")
-	}
-
-	for _, order := range orders {
+	for _, order := range ctx.Group {
 		row := sheet.AddRow()
 		orderId := row.AddCell()
 		orderId.Value = strconv.Itoa(order.ID)
@@ -259,7 +289,6 @@ func (handler *MyOrderHandler) excelHandler(sheetName, outPutFileUrl string) err
 	return nil
 }
 
-
 func mapTransformer(order *model.DemoOrder) map[string]interface{} {
 	m := map[string]interface{}{
 		"Id":        order.ID,
@@ -272,3 +301,30 @@ func mapTransformer(order *model.DemoOrder) map[string]interface{} {
 	return m
 }
 
+//单文件上传
+func singleFileUpload(c *gin.Context) string {
+	file, err := c.FormFile("file")
+	if err != nil {
+		log.Println("ERROR: upload file failed. ", err)
+		c.JSON(http.StatusBadRequest, &common.HttpResp{
+			ErrCode: "110",
+			ErrMsg:  "单文件上传错误",
+		})
+		return ""
+	}
+	dst := fmt.Sprintf("./file/" + file.Filename)
+	err = c.SaveUploadedFile(file, dst)
+	if err != nil {
+		log.Println("ERROR: save file failed. ", err)
+		c.JSON(http.StatusBadRequest, &common.HttpResp{
+			ErrCode: "111",
+			ErrMsg:  "单文件保存失败",
+		})
+		return ""
+	}
+	c.JSON(http.StatusOK, &common.HttpResp{
+		Success: true,
+		Data:    dst,
+	})
+	return dst
+}
