@@ -4,8 +4,12 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"testGinandGorm/common/db"
-	"testGinandGorm/pkg/alert"
+	"testGinandGorm/common/redis_utils"
+	"testGinandGorm/pkg/dao"
+	db2 "testGinandGorm/pkg/db"
+	"testGinandGorm/pkg/handler"
 	"testGinandGorm/pkg/router"
+	"testGinandGorm/pkg/service"
 )
 
 //func main() {
@@ -20,11 +24,11 @@ import (
 
 func main() {
 	db := db.DbInit()
-	orderDB := alert.NewOrderDB(db)
-	orderCache := alert.NewCache()
-	orderDao := alert.NewMyOrderDao(*orderDB,orderCache)
-	orderService := alert.NewOrderService(*orderDao)
-	ordeHandler := alert.NewOrderHandler(orderService)
+	orderDB := db2.NewMyOrderDB(db)
+	orderCache := redis_utils.NewRedisCache(1e10 * 6 * 20)
+	orderDao := dao.NewMyOrderDao(orderDB, &orderCache)
+	orderService := service.NewOrderService(orderDao)
+	ordeHandler := handler.NewOrderHandler(orderService)
 	router.BindRoute(ordeHandler)
 	db.Close()
 }
