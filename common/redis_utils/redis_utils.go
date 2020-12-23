@@ -193,8 +193,8 @@ func (c Cache) ScardInt64s(name string) (int64, error) {
 	return v, err
 }
 
-// 存入序列化后的结构体对象
-func (c Cache) SetStruct(name string, v interface{}) (err error) {
+// 存入序列化后的对象
+func (c Cache) SetString(name string, v interface{}) (err error) {
 	conn := c.pool.Get()
 	defer conn.Close()
 	var ub []byte
@@ -206,8 +206,8 @@ func (c Cache) SetStruct(name string, v interface{}) (err error) {
 	return err
 }
 
-// 获取反序列化后的结构体对象
-func (c Cache) GetStruct(name string, v interface{}) (err error) {
+// 获取反序列化后的对象
+func (c Cache) GetString(name string, v interface{}) (err error) {
 	conn := c.pool.Get()
 	defer conn.Close()
 	var vb []byte

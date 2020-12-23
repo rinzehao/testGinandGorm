@@ -24,21 +24,26 @@ type MyOrderDao struct {
 	cache *redis_utils.Cache
 }
 
+const (
+	id_prefix = "OrderID:"
+	no_prefix = "OrderNo:"
+)
+
 func NewMyOrderDao(db db.OrderDB, cache *redis_utils.Cache) *MyOrderDao {
 	return &MyOrderDao{db: db, cache: cache}
 }
 
 func (dao *MyOrderDao) CreateOrder(s *model.DemoOrder) error {
-	// step1 cache
-	// ID -> Hash Hash:orderNo->order
-	if err := dao.cache.HSet("orderHash", strconv.Itoa(s.ID), s.OrderNo); err != nil {
-		return err
-	}
-	if err := dao.cache.SetStruct(s.OrderNo, s); err != nil {
-		return err
-	}
-	// step2 db
+	// step1 写入db
 	if err := dao.db.CreateOrder(s); err != nil {
+		return err
+	}
+	// step2 写入cache
+	// ID -> OrderNo OrderNo->OrderEntity
+	if err := dao.cache.SetString(id_prefix+strconv.Itoa(s.ID), no_prefix+s.OrderNo); err != nil {
+		return err
+	}
+	if err := dao.cache.SetString(no_prefix+s.OrderNo, s); err != nil {
 		return err
 	}
 	return nil
@@ -46,91 +51,103 @@ func (dao *MyOrderDao) CreateOrder(s *model.DemoOrder) error {
 
 func (dao *MyOrderDao) DeleteOrderById(id string) error {
 	//step1 cache
-	_, err := dao.cache.Hdel("orderHash", id)
-	if err != nil {
+	var cacheNoKey string
+	dao.cache.GetString(id_prefix+id, &cacheNoKey)
+	if _, err := dao.cache.Delete(cacheNoKey); err != nil {
 		return err
 	}
+	if _, err := dao.cache.Delete(id_prefix + id); err != nil {
+		return err
+	}
+
 	//step2 db
-	if err = dao.db.DeleteById(id); err != nil {
+	if err := dao.db.DeleteById(id); err != nil {
 		log.Println("delete order from db failed ")
 		return err
 	}
 	return nil
 }
 
-func (dao *MyOrderDao) UpdateByNo(no string, m map[string]interface{}) error {
+func (dao *MyOrderDao) UpdateByNo(orderNo string, m map[string]interface{}) error {
 	//step1 cache淘汰
-	_, err := dao.cache.Hdel("orderHash", no)
-	if err != nil {
+	if _, err := dao.cache.Delete(no_prefix + orderNo); err != nil {
 		return err
 	}
 	//step2 db写入
-	if err := dao.db.UpdateByNo(no, m); err != nil {
+	if err := dao.db.UpdateByNo(orderNo, m); err != nil {
 		return err
 	}
 	//step3 cache写入
-	order, err := dao.db.QueryOrderByNo(no)
+	order, err := dao.db.QueryOrderByNo(orderNo)
 	if err != nil {
 		return err
 	}
-	if err := dao.cache.SetStruct(no, order); err != nil {
+	if err := dao.cache.SetString(no_prefix+orderNo, order); err != nil {
 		return err
 	}
 	return nil
 }
 
 func (dao *MyOrderDao) QueryOrderById(id string) (order *model.DemoOrder, err error) {
-	//step1 cache
-	var flag bool
-	if flag, err = dao.cache.HExists("orderHash", id); err != nil {
+	//step1 get from cache
+	flag, err := dao.cache.Exist(id_prefix + id)
+	if err != nil {
 		return nil, err
 	}
+	var cacheNoKey string
 	if flag == true {
-		if err = dao.cache.GetStruct(id, &order); err != nil {
+		if err := dao.cache.GetString(id_prefix+id, &cacheNoKey); err != nil {
 			return nil, err
 		}
+		if flag, err = dao.cache.Exist(cacheNoKey); err != nil {
+			return nil, err
+		}
+		if flag == true {
+			if err = dao.cache.GetString(cacheNoKey, &order); err != nil {
+				return nil, err
+			}
+			if order != nil {
+				return order, nil
+			}
+		}
 	}
-	if order != nil {
-		return order, nil
-	}
-	//step2 get db
+	//step2 get from db
 	order, err = dao.db.QueryOrderById(id)
 	if err != nil {
 		return nil, err
 	}
 	//step3 set cache
 	if order != nil {
-		dao.cache.SetStruct(id, order)
+		dao.cache.SetString(no_prefix+order.OrderNo, order)
+		dao.cache.SetString(id_prefix+id, no_prefix+order.OrderNo)
 	}
-
 	return order, nil
 }
 
-func (dao *MyOrderDao) QueryOrderByNo(no string) (order *model.DemoOrder, err error) {
-	//step1 cache
-	var flag bool
-	if flag, err = dao.cache.HExists("orderHash", no); err != nil {
+func (dao *MyOrderDao) QueryOrderByNo(OrderNo string) (order *model.DemoOrder, err error) {
+	//step1 get from cache
+	flag, err := dao.cache.Exist(no_prefix + OrderNo)
+	if err != nil {
 		return nil, err
 	}
-	if flag == false {
-		log.Println("queryTarget form cache fail")
-	}
 	if flag == true {
-		if err = dao.cache.GetStruct(no, order); err != nil {
+		if err = dao.cache.GetString(no_prefix+OrderNo, &order); err != nil {
 			return nil, err
 		}
+		if order != nil {
+			return order, nil
+		}
 	}
-	if order != nil {
-		return order, nil
-	}
-	//step2 get db
-	order, err = dao.db.QueryOrderByNo(no)
+	//step2 get from db
+	order, err = dao.db.QueryOrderByNo(OrderNo)
 	if err != nil {
 		return nil, err
 	}
 	//step3 set cache
 	if order != nil {
-		dao.cache.SetStruct(no, order)
+		if err := dao.cache.SetString(no_prefix+OrderNo, order); err != nil {
+			return nil, err
+		}
 	}
 	return order, nil
 }
@@ -153,19 +170,15 @@ func (dao *MyOrderDao) UpdateById(id string, m map[string]interface{}) error {
 	if err != nil {
 		return err
 	}
-	_, err = dao.cache.Delete(order)
-	if err != nil {
-		return err
+	var cacheNoKey string
+	if err := dao.cache.GetString(id_prefix+id, &cacheNoKey); err != nil {
+		return nil
 	}
-	_, err = dao.cache.Hdel("orderHash", id)
-	if err != nil {
+	if _, err = dao.cache.Delete(cacheNoKey); err != nil {
 		return err
 	}
 	//step3 cache写入
-	if err := dao.cache.SetStruct(order.OrderNo, order); err != nil {
-		return err
-	}
-	if err := dao.cache.SetStruct(id, order.OrderNo); err != nil {
+	if err := dao.cache.SetString(cacheNoKey, order); err != nil {
 		return err
 	}
 	return nil
