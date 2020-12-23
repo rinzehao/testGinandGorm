@@ -3,3 +3,5 @@
 {"level":"error","ts":"2020-12-23T13:57:28.885+0800","caller":"handler/handler.go:111","msg":"#Order Update fail{error 26 0  record not found}"}
 {"level":"error","ts":"2020-12-23T13:57:31.052+0800","caller":"handler/handler.go:111","msg":"#Order Update fail{error 26 0  record not found}"}
 {"level":"error","ts":"2020-12-23T13:58:00.881+0800","caller":"handler/handler.go:139","msg":"#Query Order fail{error 26 0  record not found}"}
+{"level":"error","ts":"2020-12-23T14:16:00.307+0800","caller":"handler/handler.go:139","msg":"#Query Order fail{error 26 0  record not found}"}
+{"level":"warn","ts":"2020-12-23T14:16:49.197+0800","caller":"handler/handler.go:127","msg":"#Input ID Has error"}
