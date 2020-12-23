@@ -13,42 +13,42 @@ type OrderMade struct {
 	Group     []*DemoOrder
 }
 
-func (o *OrderMade) GetOrder() interface{} {
+func (o *OrderMade) QueryOrder() interface{} {
 	return &o.Order
 }
 
-func (o *OrderMade) GetOrderID() string {
+func (o *OrderMade) QueryOrderID() string {
 	return o.OrderID
 }
 
-func (o *OrderMade) GetOrderNo() string {
+func (o *OrderMade) QueryOrderNo() string {
 	return o.OrderNo
 }
 
-func (o *OrderMade) GetUpdateMap() map[string]interface{} {
+func (o *OrderMade) QueryUpdateMap() map[string]interface{} {
 	return o.UpdateMap
 }
 
-func (o *OrderMade) GetPage() int {
+func (o *OrderMade) QueryPage() int {
 	return o.Page
 }
 
-func (o *OrderMade) GetPageSize() int {
+func (o *OrderMade) QueryPageSize() int {
 	return o.PageSize
 }
 
-func (o *OrderMade) GetUserName() string {
+func (o *OrderMade) QueryUserName() string {
 	return o.UserName
 }
 
-func (o *OrderMade) GetOrderBy() string {
+func (o *OrderMade) QueryOrderBy() string {
 	return o.OrderBy
 }
 
-func (o *OrderMade) GetDesc() string {
+func (o *OrderMade) QueryDesc() string {
 	return o.Desc
 }
 
-func (o *OrderMade) GetGroup() []*DemoOrder {
+func (o *OrderMade) QueryGroup() []*DemoOrder {
 	return o.Group
 }

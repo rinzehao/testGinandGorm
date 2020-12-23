@@ -1,14 +1,14 @@
 package model
 
 type OrderInterface interface {
-	GetOrder() interface{}
-	GetOrderID() string
-	GetOrderNo() string
-	GetUpdateMap() map[string]interface{}
-	GetPage() int
-	GetPageSize() int
-	GetUserName() string
-	GetOrderBy() string
-	GetDesc() string
-	GetGroup() []*DemoOrder
+	QueryOrder() interface{}
+	QueryOrderID() string
+	QueryOrderNo() string
+	QueryUpdateMap() map[string]interface{}
+	QueryPage() int
+	QueryPageSize() int
+	QueryUserName() string
+	QueryOrderBy() string
+	QueryDesc() string
+	QueryGroup() []*DemoOrder
 }
