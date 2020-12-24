@@ -31,7 +31,7 @@ func init() {
 	level := getLoggerLevel("debug")
 	syncWriter := zapcore.AddSync(&lumberjack.Logger{
 		Filename:  fileName,
-		MaxSize:   128,
+		MaxSize:   10,
 		MaxAge:    7,
 		LocalTime: true,
 		Compress:  true,

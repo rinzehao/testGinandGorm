@@ -24,3 +24,14 @@
 {"level":"warn","ts":"2020-12-23T17:04:00.824+0800","caller":"handler/handler.go:127","msg":"#Input ID Has error"}
 {"level":"error","ts":"2020-12-23T17:04:25.359+0800","caller":"handler/handler.go:139","msg":"#Query Order fail{error 26 0  record not found}"}
 {"level":"error","ts":"2020-12-23T17:19:15.476+0800","caller":"handler/handler.go:111","msg":"#Order Update fail{error 26 0  record not found}"}
+{"level":"warn","ts":"2020-12-24T15:14:17.292+0800","caller":"handler/handler.go:41","msg":"#Input ID Has error"}
+{"level":"warn","ts":"2020-12-24T15:14:18.652+0800","caller":"handler/handler.go:41","msg":"#Input ID Has error"}
+{"level":"warn","ts":"2020-12-24T15:14:19.128+0800","caller":"handler/handler.go:41","msg":"#Input ID Has error"}
+{"level":"warn","ts":"2020-12-24T15:14:19.463+0800","caller":"handler/handler.go:41","msg":"#Input ID Has error"}
+{"level":"warn","ts":"2020-12-24T15:14:19.766+0800","caller":"handler/handler.go:41","msg":"#Input ID Has error"}
+{"level":"warn","ts":"2020-12-24T15:14:21.567+0800","caller":"handler/handler.go:41","msg":"#Input ID Has error"}
+{"level":"warn","ts":"2020-12-24T15:14:22.122+0800","caller":"handler/handler.go:41","msg":"#Input ID Has error"}
+{"level":"warn","ts":"2020-12-24T15:14:22.662+0800","caller":"handler/handler.go:41","msg":"#Input ID Has error"}
+{"level":"warn","ts":"2020-12-24T15:14:23.186+0800","caller":"handler/handler.go:41","msg":"#Input ID Has error"}
+{"level":"warn","ts":"2020-12-24T15:14:23.732+0800","caller":"handler/handler.go:41","msg":"#Input ID Has error"}
+{"level":"warn","ts":"2020-12-24T15:14:24.310+0800","caller":"handler/handler.go:41","msg":"#Input ID Has error"}
