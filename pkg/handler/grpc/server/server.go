@@ -6,7 +6,7 @@ import (
 	"google.golang.org/grpc/reflection"
 	"log"
 	"net"
-	"testGinandGorm/common/db"
+	"testGinandGorm/common/mySQL_db"
 	"testGinandGorm/pkg/dao"
 	"testGinandGorm/pkg/handler/grpc/pb"
 	"testGinandGorm/pkg/handler/grpc/server/rpc-handler"
@@ -18,7 +18,7 @@ const (
 )
 
 func main() {
-	Db := db.DbInit()
+	Db := mySQL_db.DbInit()
 	orderDao := dao.NewOrderDao(Db)
 	orderService := service.NewService(orderDao)
 	go crudService(orderService)

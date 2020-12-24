@@ -60,9 +60,9 @@ func (dao *MyOrderDao) DeleteOrderById(id string) error {
 		return err
 	}
 
-	//step2 db
+	//step2 mySQL_db
 	if err := dao.db.DeleteById(id); err != nil {
-		log.Println("delete order from db failed ")
+		log.Println("delete order from mySQL_db failed ")
 		return err
 	}
 	return nil
@@ -111,7 +111,7 @@ func (dao *MyOrderDao) QueryOrderById(id string) (order *model.DemoOrder, err er
 			}
 		}
 	}
-	//step2 get from db
+	//step2 get from mySQL_db
 	order, err = dao.db.QueryOrderById(id)
 	if err != nil {
 		return nil, err
@@ -138,7 +138,7 @@ func (dao *MyOrderDao) QueryOrderByNo(OrderNo string) (order *model.DemoOrder, e
 			return order, nil
 		}
 	}
-	//step2 get from db
+	//step2 get from mySQL_db
 	order, err = dao.db.QueryOrderByNo(OrderNo)
 	if err != nil {
 		return nil, err

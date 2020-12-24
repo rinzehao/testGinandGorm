@@ -1,92 +1,98 @@
 package service
 
-
 import (
 	"github.com/stretchr/testify/assert"
 	"math/rand"
 	"strconv"
-	"testGinandGorm/common/db"
+	"testGinandGorm/common/mySQL_db"
+	"testGinandGorm/common/redis_utils"
 	"testGinandGorm/pkg/dao"
+	"testGinandGorm/pkg/db"
 	"testGinandGorm/pkg/model"
 	"testing"
 	"time"
 )
 
-func initial() (testService *OrderService, sample *model.DemoOrder) {
-	db := db.DbInit()
-	db.LogMode(true)
-	dao := dao.NewOrderDao(db)
-	sample = &model.DemoOrder{OrderNo:time.Now().Format("2006-01-02 15:04:05")+queryRandomString(10),UserName: "raious", Amount: 444, Status: "over", FileUrl: ".././pkg/dao"}
-	return NewService(dao) ,sample
+func initial() (service OrderService, sample model.OrderMade) {
+	sqlDb := mySQL_db.DbInit()
+	orderDb := db.NewMyOrderDB(sqlDb)
+	cache := redis_utils.NewRedisCache(1e10 * 6 * 20)
+	dao := dao.NewMyOrderDao(orderDb, &cache)
+	orderService := NewOrderService(dao)
+	orderSample := &model.DemoOrder{OrderNo: time.Now().Format("2006-01-02 15:04:05") + queryRandomString(10), UserName: "raious", Amount: 444, Status: "over", FileUrl: ".././pkg/dao"}
+	sample = model.OrderMade{
+		Order:   orderSample,
+		OrderID: strconv.Itoa(orderSample.ID),
+		OrderNo: orderSample.OrderNo,
+	}
+	return orderService, sample
 }
 
 func TestCreateOrderByOrderNo(t *testing.T) {
-	testService, sample:=initial()
-	assert.NoError(t,testService.CreateOrder(sample))
+	service, sample := initial()
+	assert.NoError(t, service.CreateOrder(&sample))
 }
 
 func TestDeleteOrderById(t *testing.T) {
-	testService, sample:=initial()
-	assert.NoError(t,testService.CreateOrder(sample))
-	assert.NoError(t,testService.DeleteOrderById(strconv.Itoa(sample.ID)))
+	service, sample := initial()
+	assert.NoError(t, service.CreateOrder(&sample))
+	assert.NoError(t, service.DeleteOrderById(&sample))
 }
 
 func TestQueryOrderById(t *testing.T) {
-	testService, sample:=initial()
-	assert.NoError(t,testService.CreateOrder(sample))
-	order,err := testService.QueryOrderById(strconv.Itoa(sample.ID))
-	assert.NoError(t,err)
-	assert.NotEmpty(t,order)
+	service, sample := initial()
+	assert.NoError(t, service.CreateOrder(&sample))
+	order :=sample.Order.(*model.DemoOrder)
+	sample.OrderID =strconv.Itoa(order.ID)
+	err := service.QueryOrderById(&sample)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, sample.Order)
 }
 
 func TestUpdateByOrderNo(t *testing.T) {
-	testService, sample:=initial()
-	assert.NoError(t,testService.CreateOrder(sample))
-	m:=map[string]interface{}{
-		"Id" :sample.ID,
-		"order_No":sample.OrderNo,
-		"user_name" :sample.UserName,
-		"amount" :sample.Amount,
-		"status" :"testAlter",
-		"file_url":sample.FileUrl,
+	service, sample := initial()
+	assert.NoError(t, service.CreateOrder(&sample))
+	m := map[string]interface{}{
+		"Id":        sample.Order,
+		"order_No":  sample.OrderNo,
+		"user_name": sample.UserName+queryRandomString(5),
 	}
-	assert.NoError(t,testService.UpdateByOrderNo(m, sample.OrderNo))
-	m = map[string]interface{}{
-		"order_No":sample.OrderNo,
-		"user_name" :"testAlter",
-		"amount" :sample.Amount,
-		"file_url":sample.FileUrl,
-	}
-	assert.NoError(t,testService.UpdateByOrderNo(m, sample.OrderNo))
+	sample.UpdateMap =m
+	assert.NoError(t, service.UpdateByOrderNo(&sample))
 }
 
 func TestQueryOrders(t *testing.T) {
-	testService, sample:=initial()
-	assert.NoError(t,testService.CreateOrder(sample))
-	orders,err := testService.QueryOrders(1,100)
-	assert.NoError(t,err)
-	assert.NotEmpty(t,orders)
+	service, sample := initial()
+	assert.NoError(t, service.CreateOrder(&sample))
+	sample.Page=1
+	sample.PageSize=100
+	err := service.QueryOrders(&sample)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, sample.Group)
 }
 
 func TestQueryOrdersByName(t *testing.T) {
-	testService, sample:=initial()
-	assert.NoError(t,testService.CreateOrder(sample))
-	order, err := testService.QueryOrdersByName(sample.UserName,"amount","desc")
-	assert.NoError(t,err)
-	assert.NotEmpty(t,order)
+	service, sample := initial()
+	assert.NoError(t, service.CreateOrder(&sample))
+	sample.OrderBy="amount"
+	sample.Desc ="desc"
+	err := service.QueryOrdersByName(&sample)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, sample.Group)
 }
 
 func TestUpdateUrlById(t *testing.T) {
-	testService, sample:=initial()
-	assert.NoError(t,testService.CreateOrder(sample))
+	service, sample := initial()
+	assert.NoError(t, service.CreateOrder(&sample))
 	m := map[string]interface{}{
 		"file_url": ".././test",
 	}
-	err := testService.UpdateById(m,strconv.Itoa(sample.ID))
-	assert.NoError(t,err)
+	sample.UpdateMap =m
+	err := service.UpdateById(&sample)
+	assert.NoError(t, err)
 }
 
-func  queryRandomString(l int) string {
+func queryRandomString(l int) string {
 	str := "0123456789abcdefghijklmnopqrstuvwxyz"
 	bytes := []byte(str)
 	result := []byte{}
