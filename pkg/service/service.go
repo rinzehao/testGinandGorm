@@ -38,7 +38,7 @@ func (service *MyOrderService) QueryOrderById(ctx *model.OrderMade) error {
 }
 
 func (service *MyOrderService) UpdateByOrderNo(ctx *model.OrderMade) error {
-	return service.orderDao.UpdateByNo(ctx.GetOrderNo(), ctx.GetUpdateMap())
+	return service.orderDao.UpdateByNo(ctx.QueryOrderNo(), ctx.QueryUpdateMap())
 }
 
 func (service *MyOrderService) CreateOrder(ctx *model.OrderMade) error {
