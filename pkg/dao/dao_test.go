@@ -2,7 +2,6 @@ package dao
 
 import (
 	"github.com/stretchr/testify/assert"
-	"math/rand"
 	"strconv"
 	"testGinandGorm/common/mySQL_db"
 	"testGinandGorm/common/redis_utils"
@@ -18,7 +17,13 @@ func initial() (dao OrderDao, sample *model.DemoOrder) {
 	cache := redis_utils.NewRedisCache(1e10 * 6 * 20)
 	dao = NewMyOrderDao(orderDb, &cache)
 	sqlDb = sqlDb.LogMode(true)
-	sample = &model.DemoOrder{OrderNo: time.Now().Format("2006-01-02 15:04:05") + queryRandomString(10), UserName: "raious", Amount: 444, Status: "over", FileUrl: ".././pkg/dao"}
+	timeNow := time.Now()
+	hour:=timeNow.Hour()        //小时
+	minute:=timeNow.Minute()      //分钟
+	second:=timeNow.Second()      //秒
+	nanoSecond:=timeNow.Nanosecond()  //纳秒
+	str := strconv.Itoa(hour)+":"+strconv.Itoa(minute)+":"+strconv.Itoa(second)+":"+strconv.Itoa(nanoSecond)
+	sample = &model.DemoOrder{OrderNo: str, UserName: "raious", Amount: 444, Status: "over", FileUrl: ".././pkg/dao"}
 	return dao, sample
 }
 
@@ -104,15 +109,4 @@ func TestUpdateById(t *testing.T) {
 			"file_url": ".././test",
 		}))
 	assert.NoError(t, dao.DeleteOrderById(strconv.Itoa(sample.ID)))
-}
-
-func queryRandomString(l int) string {
-	str := "0123456789abcdefghijklmnopqrstuvwxyz"
-	bytes := []byte(str)
-	result := []byte{}
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	for i := 0; i < l; i++ {
-		result = append(result, bytes[r.Intn(len(bytes))])
-	}
-	return string(result)
 }
