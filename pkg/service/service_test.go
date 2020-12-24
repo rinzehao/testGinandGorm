@@ -19,7 +19,14 @@ func initial() (service OrderService, sample model.OrderMade) {
 	cache := redis_utils.NewRedisCache(1e10 * 6 * 20)
 	dao := dao.NewMyOrderDao(orderDb, &cache)
 	orderService := NewOrderService(dao)
-	orderSample := &model.DemoOrder{OrderNo: time.Now().Format("2006-01-02 15:04:05") + queryRandomString(10), UserName: "raious", Amount: 444, Status: "over", FileUrl: ".././pkg/dao"}
+	//orderSample := &model.DemoOrder{OrderNo: time.Now().Format("2006-01-02 15:04:05")+queryRandomString(5), UserName: "raious", Amount: 444, Status: "over", FileUrl: ".././pkg/dao"}
+	timeNow := time.Now()
+	hour:=timeNow.Hour()        //小时
+	minute:=timeNow.Minute()      //分钟
+	second:=timeNow.Second()      //秒
+	nanoSecond:=timeNow.Nanosecond()  //纳秒
+	str := strconv.Itoa(hour)+":"+strconv.Itoa(minute)+":"+strconv.Itoa(second)+":"+strconv.Itoa(nanoSecond)
+	orderSample := &model.DemoOrder{OrderNo: str, UserName: "raious", Amount: 444, Status: "over", FileUrl: ".././pkg/dao"}
 	sample = model.OrderMade{
 		Order:   orderSample,
 		OrderID: strconv.Itoa(orderSample.ID),
