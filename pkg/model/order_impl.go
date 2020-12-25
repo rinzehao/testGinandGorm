@@ -52,3 +52,128 @@ func (o *OrderMade) QueryDesc() string {
 func (o *OrderMade) QueryGroup() []*DemoOrder {
 	return o.Group
 }
+
+
+
+type CreateCtx struct{
+	ItemTyp string
+	Req interface{}
+	Result interface{}
+}
+
+func (c *CreateCtx) Schema() string {
+	return c.ItemTyp
+}
+
+func (c *CreateCtx) Param() interface{} {
+	return c.Req
+}
+
+func (c *CreateCtx) GetResult() interface{} {
+	return c.Result
+}
+
+func (c *CreateCtx) SetResult(d interface{})  {
+	c.Result = d
+}
+
+
+type UpdateCtx struct{
+	ItemTyp string
+	Identify string
+	Req interface{}
+	Result interface{}
+}
+
+func (c *UpdateCtx) Schema() string {
+	return c.ItemTyp
+}
+
+func (c *UpdateCtx) Param() interface{} {
+	return c.Req
+}
+
+func (c *UpdateCtx) GetResult() interface{} {
+	return c.Result
+}
+
+func (c *UpdateCtx) SetResult(d interface{})  {
+	c.Result = d
+}
+
+func (c *UpdateCtx) GetIdentify() string {
+	return c.Identify
+}
+
+type QueryCtx struct{
+	ItemTyp string
+	Req interface{}
+	Result interface{}
+}
+
+func (c *QueryCtx) Schema() string {
+	return c.ItemTyp
+}
+
+func (c *QueryCtx) Param() interface{} {
+	return c.Req
+}
+
+func (c *QueryCtx) GetResult() interface{} {
+	return c.Result
+}
+
+func (c *QueryCtx) SetResult(d interface{})  {
+	c.Result = d
+}
+
+
+
+type QueryCtxs struct{
+	ItemTyp string
+	ReqPage interface{}
+	ReqSize interface{}
+	Result []interface{}
+}
+
+func (c *QueryCtxs) Schema() string {
+	return c.ItemTyp
+}
+
+func (c *QueryCtxs) Page() interface{} {
+	return c.ReqPage
+}
+
+func (c *QueryCtxs) PageSize() interface{} {
+	return c.ReqPage
+}
+
+func (c *QueryCtxs) GetResult() []interface{} {
+	return c.Result
+}
+
+func (c *QueryCtxs) SetResult(d []interface{})  {
+	c.Result = d
+}
+
+type DeleteCtx struct{
+	ItemTyp string
+	Req interface{}
+	Result interface{}
+}
+
+func (c *DeleteCtx) Schema() string {
+	return c.ItemTyp
+}
+
+func (c *DeleteCtx) Param() interface{} {
+	return c.Req
+}
+
+func (c *DeleteCtx) GetResult() interface{} {
+	return c.Result
+}
+
+func (c *DeleteCtx) SetResult(d interface{})  {
+	c.Result = d
+}

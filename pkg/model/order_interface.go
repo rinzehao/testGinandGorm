@@ -12,3 +12,42 @@ type OrderInterface interface {
 	QueryDesc() string
 	QueryGroup() []*DemoOrder
 }
+
+
+type CreateContext interface{
+	Schema() string
+	Param() interface{}
+	GetResult() interface{}
+	SetResult(interface{})
+}
+
+type UpdateContext interface{
+	Schema() string
+	GetIdentify () string
+	Param() interface{}
+	GetResult() interface{}
+	SetResult(interface{})
+}
+
+type QueryContext interface {
+	Schema() string
+	Param() interface{}
+	GetResult() interface{}
+	SetResult(interface{})
+}
+
+type DeleteContext interface {
+	Schema() string
+	Param() interface{}
+	GetResult() interface{}
+	SetResult(interface{})
+}
+
+type QueryOrdersContext interface {
+	Schema() string
+	Page() interface{}
+	PageSize() interface{}
+	GetResult() []interface{}
+	SetResult([]interface{})
+}
+

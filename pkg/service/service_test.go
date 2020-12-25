@@ -5,7 +5,7 @@ import (
 	"math/rand"
 	"strconv"
 	"testGinandGorm/common/mySQL_db"
-	"testGinandGorm/common/redis_utils"
+	"testGinandGorm/common/redis"
 	"testGinandGorm/pkg/dao"
 	"testGinandGorm/pkg/db"
 	"testGinandGorm/pkg/model"
@@ -16,7 +16,7 @@ import (
 func initial() (service OrderService, sample model.OrderMade) {
 	sqlDb := mySQL_db.DbInit()
 	orderDb := db.NewMyOrderDB(sqlDb)
-	cache := redis_utils.NewRedisCache(1e10 * 6 * 20)
+	cache := redis.NewRedisCache(1e10 * 6 * 20)
 	dao := dao.NewMyOrderDao(orderDb, &cache)
 	orderService := NewOrderService(dao)
 	//orderSample := &model.DemoOrder{OrderNo: time.Now().Format("2006-01-02 15:04:05")+queryRandomString(5), UserName: "raious", Amount: 444, Status: "over", FileUrl: ".././pkg/dao"}

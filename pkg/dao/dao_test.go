@@ -4,7 +4,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"strconv"
 	"testGinandGorm/common/mySQL_db"
-	"testGinandGorm/common/redis_utils"
+	"testGinandGorm/common/redis"
 	"testGinandGorm/pkg/db"
 	"testGinandGorm/pkg/model"
 	"testing"
@@ -14,7 +14,7 @@ import (
 func initial() (dao OrderDao, sample *model.DemoOrder) {
 	sqlDb := mySQL_db.DbInit()
 	orderDb := db.NewMyOrderDB(sqlDb)
-	cache := redis_utils.NewRedisCache(1e10 * 6 * 20)
+	cache := redis.NewRedisCache(1e10 * 6 * 20)
 	dao = NewMyOrderDao(orderDb, &cache)
 	sqlDb = sqlDb.LogMode(true)
 	timeNow := time.Now()

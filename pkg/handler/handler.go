@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/tealeg/xlsx"
-	"go.uber.org/zap"
 	"net/http"
 	"strconv"
 	"testGinandGorm/common"
@@ -26,12 +25,20 @@ type OrderHandler interface {
 	UploadAndUpdate(c *gin.Context)
 }
 
+//type MyOrderHandler struct {
+//	*builder.BuilderService
+//}
+//
+//func NewHandler() *Handler {
+//	return &Handler{BuilderService: builder.NewBuilderService()}
+//}
+
 type MyOrderHandler struct {
-	orderService service.OrderService
+	orderService service.Service
 }
 
 func NewOrderHandler(service service.OrderService) *MyOrderHandler {
-	return &MyOrderHandler{orderService: service}
+	return &MyOrderHandler{orderService: &service}
 }
 
 func (handler *MyOrderHandler) DeleteOrderById(c *gin.Context) {
@@ -44,7 +51,9 @@ func (handler *MyOrderHandler) DeleteOrderById(c *gin.Context) {
 		logger.SugarLogger.Warnf("Got Some Error At InputID, InputID:%s", id)
 		return
 	}
-	ctx := &model.OrderMade{OrderID: id}
+	ctx :=&model.QueryCtx{
+		Req:     id,
+	}
 	logger.SugarLogger.Debugf("Trying to Query Order By OrderID : OrderID =%s", id)
 	if err := handler.orderService.QueryOrderById(ctx); err != nil {
 		c.JSON(http.StatusBadRequest, &common.HttpResp{
@@ -54,13 +63,16 @@ func (handler *MyOrderHandler) DeleteOrderById(c *gin.Context) {
 		logger.SugarLogger.Errorf("Fail to Query Order : Error = %s", err)
 		return
 	}
+	ctx =&model.QueryCtx{
+		Req:     ctx.Req,
+	}
 	logger.SugarLogger.Debugf("Trying to Delete Order By InputID : InputID =%s", id)
 	if err := handler.orderService.DeleteOrderById(ctx); err != nil {
 		c.JSON(http.StatusBadRequest, &common.HttpResp{
 			ErrCode: "102",
 			ErrMsg:  "order删除错误",
 		})
-		logger.SugarLogger.Errorf("Fail to Delete Order By InputID : InputID =%s , Error = ", id, err)
+		logger.SugarLogger.Errorf("Fail to Delete Order By InputID : InputID =%s , Error = %s", id, err)
 		return
 	}
 	c.JSON(http.StatusOK, &common.HttpResp{
@@ -79,16 +91,9 @@ func (handler *MyOrderHandler) CreateOrder(c *gin.Context) {
 		logger.SugarLogger.Errorf("Fail to Create Order : Error = %s", err)
 		return
 	}
-	ctx := &model.OrderMade{
-		OrderNo: order.OrderNo,
-		Order: &model.DemoOrder{
-			ID:       order.ID,
-			OrderNo:  order.OrderNo,
-			UserName: order.UserName,
-			Amount:   order.Amount,
-			Status:   order.Status,
-			FileUrl:  order.FileUrl,
-		},
+	ctx := &model.CreateCtx{
+		ItemTyp: "",
+		Req:     order,
 	}
 	logger.SugarLogger.Debug("Trying to Create Order ")
 	if err := handler.orderService.CreateOrder(ctx); err != nil {
@@ -99,9 +104,10 @@ func (handler *MyOrderHandler) CreateOrder(c *gin.Context) {
 		logger.SugarLogger.Errorf("Fail to Create Order : Error = %s", err)
 		return
 	}
+
 	c.JSON(http.StatusOK, &common.HttpResp{
 		Success: true,
-		Data:    ctx.Order,
+		Data:    ctx.GetResult(),
 	})
 	logger.SugarLogger.Infof("Success!Succeed in Creating Order : OrderID =%s",order.ID)
 }
@@ -116,9 +122,10 @@ func (handler *MyOrderHandler) UpdateOrder(c *gin.Context) {
 		logger.SugarLogger.Errorf("Fail to Create Order : Error = %s", err)
 		return
 	}
-	ctx := &model.OrderMade{
-		OrderNo:   order.OrderNo,
-		UpdateMap: handler.mapTransformer(&order),
+	ctx :=&model.UpdateCtx{
+		ItemTyp: "",
+		Identify : order.OrderNo,
+		Req:     handler.mapTransformer(&order),
 	}
 	logger.SugarLogger.Debugf("Trying to Update Order By OrderNo : OrderNo =%s", order.OrderNo)
 	if err := handler.orderService.UpdateByOrderNo(ctx); err != nil {
@@ -146,8 +153,8 @@ func (handler *MyOrderHandler) QueryOrderById(c *gin.Context) {
 		logger.SugarLogger.Warnf("Got Some Error At InputID, InputID:%s", id)
 		return
 	}
-	ctx := &model.OrderMade{
-		OrderID: id,
+	ctx := &model.QueryCtx{
+		Req:     id,
 	}
 	logger.SugarLogger.Debugf("Trying to Query Order By InputID : InputID =%s", id)
 	err := handler.orderService.QueryOrderById(ctx)
@@ -161,16 +168,16 @@ func (handler *MyOrderHandler) QueryOrderById(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, &common.HttpResp{
 		Success: true,
-		Data:    ctx.Order,
+		Data:    ctx.GetResult(),
 	})
 	logger.SugarLogger.Infof("Success!Succeed in Querying Order By InputID : InputID =%s", id)
 }
 
 func (handler *MyOrderHandler) QueryAllOrders(c *gin.Context) {
 	var page, pageSize = 1, 100
-	ctx := &model.OrderMade{
-		Page:     page,
-		PageSize: pageSize,
+	ctx := &model.QueryCtxs{
+		ReqPage: page,
+		ReqSize: pageSize,
 	}
 	logger.SugarLogger.Debug("Trying to Query All Orders ")
 	err := handler.orderService.QueryOrders(ctx)
@@ -184,20 +191,20 @@ func (handler *MyOrderHandler) QueryAllOrders(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, &common.HttpResp{
 		Success: true,
-		Data:    ctx.Group,
+		Data:    ctx.GetResult(),
 	})
-	logger.SugarLogger.Infof("Success!Succeed in Querying All Orders : Counts Of Orders =%s", len(ctx.Group))
+	logger.SugarLogger.Infof("Success!Succeed in Querying All Orders : Counts Of Orders =%s", len(ctx.GetResult()))
 }
 
 //根据user_name做模糊查找、根据创建时间、金额排序
 func (handler *MyOrderHandler) QueryOrders(c *gin.Context) {
 	var order model.DemoOrder
 	if err := c.BindJSON(&order); err != nil {
-		logger.Error("#JSON Binding fail", zap.Error(err))
 		c.JSON(http.StatusBadRequest, &common.HttpResp{
 			ErrCode: "100",
 			ErrMsg:  "模糊查找条目失败:JSON绑定错误",
 		})
+		logger.SugarLogger.Errorf("Fail to Create Order : Error = %s", err)
 		return
 	}
 	ctx := &model.OrderMade{
@@ -253,11 +260,11 @@ func (handler *MyOrderHandler) UploadAndUpdate(c *gin.Context) {
 		logger.SugarLogger.Warnf("Got Some Error At InputID, InputID:%s", id)
 		return
 	}
-	ctx := &model.OrderMade{
-		OrderID: id,
+	queryCtx := &model.QueryCtx{
+		Req: id,
 	}
 	logger.SugarLogger.Debugf("Trying to Query Order By OrderID : OrderID =%s", id)
-	if err := handler.orderService.QueryOrderById(ctx); err != nil {
+	if err := handler.orderService.QueryOrderById(queryCtx); err != nil {
 		c.JSON(http.StatusBadRequest, &common.HttpResp{
 			ErrCode: "103",
 			ErrMsg:  "获取条目失败：找不到指定条目",
@@ -268,12 +275,12 @@ func (handler *MyOrderHandler) UploadAndUpdate(c *gin.Context) {
 	m := map[string]interface{}{
 		"file_url": handler.singleFileUpload(c),
 	}
-	ctx = &model.OrderMade{
-		OrderID:   id,
-		UpdateMap: m,
+	updateCtx := &model.UpdateCtx{
+		Identify: id,
+		Req:      m,
 	}
 	logger.SugarLogger.Debugf("Trying to Update Order By OrderID : OrderID =%s", id)
-	if err := handler.orderService.UpdateById(ctx); err != nil {
+	if err := handler.orderService.UpdateById(updateCtx); err != nil {
 		logger.SugarLogger.Errorf("Fail to Update Order : Error = %s", err)
 		c.JSON(http.StatusBadRequest, &common.HttpResp{
 			ErrCode: "109",
@@ -283,7 +290,7 @@ func (handler *MyOrderHandler) UploadAndUpdate(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, &common.HttpResp{
 		Success: true,
-		Data:    ctx.UpdateMap,
+		Data:    updateCtx.GetResult(),
 	})
 	logger.SugarLogger.Infof("Success!Succeed in Uploading And Saving  : OrderID = %s",id)
 }
@@ -383,4 +390,10 @@ func (handler *MyOrderHandler) singleFileUpload(c *gin.Context) string {
 		Data:    dst,
 	})
 	return dst
+}
+
+func getOrders(params ...interface{}) []*model.DemoOrder {
+	strArray := make([] *model.DemoOrder,len(params))
+	for i ,arg := range params { strArray[i] = arg.(*model.DemoOrder)}
+	return strArray
 }

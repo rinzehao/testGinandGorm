@@ -46,3 +46,42 @@
 2020-12-24T17:01:00.131+0800	DEBUG	handler/handler.go:48	Trying to Query Order By OrderID : OrderID =138
 2020-12-24T17:01:00.131+0800	DEBUG	handler/handler.go:57	Trying to Delete Order By InputID : InputID =138
 2020-12-24T17:01:00.136+0800	INFO	handler/handler.go:69	Success!Succeed in Deleting Order By InputID : InputID =138
+2020-12-25T15:39:10.306+0800	DEBUG	handler/handler.go:177	Trying to Query All Orders 
+2020-12-25T15:39:10.313+0800	INFO	handler/handler.go:191	Success!Succeed in Querying All Orders : Counts Of Orders =%!s(int=78)
+2020-12-25T15:40:33.233+0800	DEBUG	handler/handler.go:93	Trying to Create Order 
+2020-12-25T15:40:33.240+0800	INFO	handler/handler.go:108	Success!Succeed in Creating Order : OrderID =%!s(int=133)
+2020-12-25T15:47:19.375+0800	DEBUG	handler/handler.go:93	Trying to Create Order 
+2020-12-25T15:47:19.382+0800	INFO	handler/handler.go:106	Success!Succeed in Creating Order : OrderID =%!s(int=134)
+2020-12-25T15:48:22.013+0800	DEBUG	handler/handler.go:93	Trying to Create Order 
+2020-12-25T15:48:22.023+0800	INFO	handler/handler.go:107	Success!Succeed in Creating Order : OrderID =%!s(int=135)
+2020-12-25T15:50:26.321+0800	DEBUG	handler/handler.go:93	Trying to Create Order 
+2020-12-25T15:51:55.179+0800	DEBUG	handler/handler.go:93	Trying to Create Order 
+2020-12-25T15:52:55.031+0800	DEBUG	handler/handler.go:93	Trying to Create Order 
+2020-12-25T15:53:38.688+0800	INFO	handler/handler.go:107	Success!Succeed in Creating Order : OrderID =%!s(int=137)
+2020-12-25T15:55:03.022+0800	DEBUG	handler/handler.go:93	Trying to Create Order 
+2020-12-25T15:55:03.029+0800	INFO	handler/handler.go:107	Success!Succeed in Creating Order : OrderID =%!s(int=138)
+2020-12-25T15:55:41.098+0800	DEBUG	handler/handler.go:93	Trying to Create Order 
+2020-12-25T15:56:15.559+0800	INFO	handler/handler.go:107	Success!Succeed in Creating Order : OrderID =%!s(int=138)
+2020-12-25T15:57:33.597+0800	DEBUG	handler/handler.go:93	Trying to Create Order 
+2020-12-25T15:59:32.407+0800	DEBUG	handler/handler.go:93	Trying to Create Order 
+2020-12-25T15:59:32.414+0800	INFO	handler/handler.go:107	Success!Succeed in Creating Order : OrderID =%!s(int=140)
+2020-12-25T16:39:20.863+0800	DEBUG	handler/handler.go:93	Trying to Create Order 
+2020-12-25T16:39:20.864+0800	INFO	handler/handler.go:107	Success!Succeed in Creating Order : OrderID =%!s(int=140)
+2020-12-25T16:40:07.621+0800	DEBUG	handler/handler.go:125	Trying to Update Order By OrderNo : OrderNo =140
+2020-12-25T16:40:07.627+0800	INFO	handler/handler.go:138	Success!Succeed in Updating Order  : OrderNo =140
+2020-12-25T17:21:21.421+0800	DEBUG	handler/handler.go:130	Trying to Update Order By OrderNo : OrderNo =140
+2020-12-25T17:21:21.428+0800	INFO	handler/handler.go:143	Success!Succeed in Updating Order  : OrderNo =140
+2020-12-25T17:21:47.370+0800	DEBUG	handler/handler.go:159	Trying to Query Order By InputID : InputID =139
+2020-12-25T17:21:47.371+0800	INFO	handler/handler.go:173	Success!Succeed in Querying Order By InputID : InputID =139
+2020-12-25T17:21:56.943+0800	DEBUG	handler/handler.go:159	Trying to Query Order By InputID : InputID =140
+2020-12-25T17:21:56.944+0800	INFO	handler/handler.go:173	Success!Succeed in Querying Order By InputID : InputID =140
+2020-12-25T17:22:12.169+0800	DEBUG	handler/handler.go:182	Trying to Query All Orders 
+2020-12-25T17:22:12.170+0800	INFO	handler/handler.go:196	Success!Succeed in Querying All Orders : Counts Of Orders =%!s(int=86)
+2020-12-25T17:23:47.616+0800	DEBUG	handler/handler.go:266	Trying to Query Order By OrderID : OrderID =140
+2020-12-25T17:23:47.625+0800	DEBUG	handler/handler.go:282	Trying to Update Order By OrderID : OrderID =140
+2020-12-25T17:23:47.631+0800	INFO	handler/handler.go:295	Success!Succeed in Uploading And Saving  : OrderID = 140
+2020-12-25T17:24:15.163+0800	DEBUG	handler/handler.go:159	Trying to Query Order By InputID : InputID =140
+2020-12-25T17:24:15.164+0800	INFO	handler/handler.go:173	Success!Succeed in Querying Order By InputID : InputID =140
+2020-12-25T17:24:38.584+0800	DEBUG	handler/handler.go:57	Trying to Query Order By OrderID : OrderID =140
+2020-12-25T17:24:38.584+0800	DEBUG	handler/handler.go:69	Trying to Delete Order By InputID : InputID =140
+2020-12-25T17:24:38.588+0800	INFO	handler/handler.go:81	Success!Succeed in Deleting Order By InputID : InputID =140

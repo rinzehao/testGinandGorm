@@ -3,8 +3,9 @@ package main
 import (
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	"testGinandGorm/common/logger"
 	"testGinandGorm/common/mySQL_db"
-	"testGinandGorm/common/redis_utils"
+	"testGinandGorm/common/redis"
 	"testGinandGorm/pkg/dao"
 	"testGinandGorm/pkg/db"
 	"testGinandGorm/pkg/handler"
@@ -14,11 +15,15 @@ import (
 
 func main() {
 	sqlDB := mySQL_db.DbInit()
+	defer sqlDB.Close()
 	orderDB := db.NewMyOrderDB(sqlDB)
-	orderCache := redis_utils.NewRedisCache(1e10 * 6 * 20)
+	orderCache := redis.NewRedisCache(1e10 * 6 * 20)
 	orderDao := dao.NewMyOrderDao(orderDB, &orderCache)
 	orderService := service.NewOrderService(orderDao)
-	ordeHandler := handler.NewOrderHandler(orderService)
-	router.BindRoute(ordeHandler)
-	sqlDB.Close()
+	ordeHandler := handler.NewOrderHandler(*orderService)
+	logger.InitLogger()
+	if err :=router.BindRoute(ordeHandler) ; err != nil {
+		logger.SugarLogger.Errorf("Fail to Route OrderHandler : InputID =%s , Error = %s", err)
+		panic(err)
+	}
 }
