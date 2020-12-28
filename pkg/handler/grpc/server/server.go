@@ -6,11 +6,12 @@ import (
 	"google.golang.org/grpc/reflection"
 	"log"
 	"net"
-	"testGinandGorm/common/mySQL_db"
+	"testGinandGorm/common/mySQL"
 	"testGinandGorm/pkg/dao"
 	"testGinandGorm/pkg/handler/grpc/pb"
 	"testGinandGorm/pkg/handler/grpc/server/rpc-handler"
 	"testGinandGorm/pkg/service"
+	"testGinandGorm/pkg/service/profile"
 )
 
 const (
@@ -18,14 +19,14 @@ const (
 )
 
 func main() {
-	Db := mySQL_db.DbInit()
+	Db := mySQL.DbInit()
 	orderDao := dao.NewOrderDao(Db)
 	orderService := service.NewService(orderDao)
 	go crudService(orderService)
 	select {}
 }
 
-func crudService(orderService *service.OrderService) {
+func crudService(orderService *profile.OrderService) {
 	listen, err := net.Listen("tcp", Address)
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)
@@ -38,5 +39,3 @@ func crudService(orderService *service.OrderService) {
 		log.Fatalf("failed to serve: %v", err)
 	}
 }
-
-

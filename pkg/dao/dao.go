@@ -9,13 +9,13 @@ import (
 )
 
 type OrderDao interface {
-	CreateOrder(s *model.DemoOrder) error
+	CreateOrder(s *model.Order) error
 	DeleteOrderById(id string) error
 	UpdateByNo(no string, m map[string]interface{}) error
-	QueryOrderById(id string) (*model.DemoOrder, error)
-	QueryOrderByNo(no string) (*model.DemoOrder, error)
-	QueryOrders(page, pageSize int) (orders []*model.DemoOrder, err error)
-	QueryOrdersByName(userName, orderBy, desc string) (orders []*model.DemoOrder, err error)
+	QueryOrderById(id string) (*model.Order, error)
+	QueryOrderByNo(no string) (*model.Order, error)
+	QueryOrders(page, pageSize int) (orders []*model.Order, err error)
+	QueryOrdersByName(userName, orderBy, desc string) (orders []*model.Order, err error)
 	UpdateById(id string, m map[string]interface{}) error
 }
 
@@ -33,7 +33,7 @@ func NewMyOrderDao(db db.OrderDB, cache *redis.Cache) *MyOrderDao {
 	return &MyOrderDao{db: db, cache: cache}
 }
 
-func (dao *MyOrderDao) CreateOrder(s *model.DemoOrder) error {
+func (dao *MyOrderDao) CreateOrder(s *model.Order) error {
 	// step1 写入db
 	if err := dao.db.CreateOrder(s); err != nil {
 		return err
@@ -60,9 +60,9 @@ func (dao *MyOrderDao) DeleteOrderById(id string) error {
 		return err
 	}
 
-	//step2 mySQL_db
+	//step2 mySQL
 	if err := dao.db.DeleteById(id); err != nil {
-		log.Println("delete order from mySQL_db failed ")
+		log.Println("delete order from mySQL failed ")
 		return err
 	}
 	return nil
@@ -88,7 +88,7 @@ func (dao *MyOrderDao) UpdateByNo(orderNo string, m map[string]interface{}) erro
 	return nil
 }
 
-func (dao *MyOrderDao) QueryOrderById(id string) (order *model.DemoOrder, err error) {
+func (dao *MyOrderDao) QueryOrderById(id string) (order *model.Order, err error) {
 	//step1 get from cache
 	flag, err := dao.cache.Exist(id_prefix + id)
 	if err != nil {
@@ -111,7 +111,7 @@ func (dao *MyOrderDao) QueryOrderById(id string) (order *model.DemoOrder, err er
 			}
 		}
 	}
-	//step2 get from mySQL_db
+	//step2 get from mySQL
 	order, err = dao.db.QueryOrderById(id)
 	if err != nil {
 		return nil, err
@@ -124,7 +124,7 @@ func (dao *MyOrderDao) QueryOrderById(id string) (order *model.DemoOrder, err er
 	return order, nil
 }
 
-func (dao *MyOrderDao) QueryOrderByNo(OrderNo string) (order *model.DemoOrder, err error) {
+func (dao *MyOrderDao) QueryOrderByNo(OrderNo string) (order *model.Order, err error) {
 	//step1 get from cache
 	flag, err := dao.cache.Exist(no_prefix + OrderNo)
 	if err != nil {
@@ -138,7 +138,7 @@ func (dao *MyOrderDao) QueryOrderByNo(OrderNo string) (order *model.DemoOrder, e
 			return order, nil
 		}
 	}
-	//step2 get from mySQL_db
+	//step2 get from mySQL
 	order, err = dao.db.QueryOrderByNo(OrderNo)
 	if err != nil {
 		return nil, err
@@ -152,11 +152,11 @@ func (dao *MyOrderDao) QueryOrderByNo(OrderNo string) (order *model.DemoOrder, e
 	return order, nil
 }
 
-func (dao *MyOrderDao) QueryOrders(page, pageSize int) (orders []*model.DemoOrder, err error) {
+func (dao *MyOrderDao) QueryOrders(page, pageSize int) (orders []*model.Order, err error) {
 	return dao.db.QueryOrders(page, pageSize)
 }
 
-func (dao *MyOrderDao) QueryOrdersByName(userName, orderBy, desc string) (orders []*model.DemoOrder, err error) {
+func (dao *MyOrderDao) QueryOrdersByName(userName, orderBy, desc string) (orders []*model.Order, err error) {
 	return dao.db.QueryOrdersByName(userName, orderBy, desc)
 }
 

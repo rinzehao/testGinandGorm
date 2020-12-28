@@ -1,4 +1,4 @@
-package mySQL_db
+package mySQL
 
 import (
 	"fmt"
@@ -18,7 +18,7 @@ func DbInit() *gorm.DB {
 		panic("")
 	}
 	Db.SingularTable(true)
-	Db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(&model.DemoOrder{})
+	Db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(&model.Order{})
 	return Db
 }
 

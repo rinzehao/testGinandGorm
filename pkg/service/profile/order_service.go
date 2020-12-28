@@ -1,9 +1,10 @@
-package service
+package profile
 
 import (
 	"github.com/jinzhu/gorm"
 	"testGinandGorm/pkg/dao"
 	"testGinandGorm/pkg/model"
+	"testGinandGorm/pkg/service"
 )
 
 //type Service interface {
@@ -29,11 +30,11 @@ func (g *OrderService) Schema() string {
 	return "order"
 }
 
-func (service *OrderService) Delete(ctx model.DeleteContext) error {
+func (service *OrderService) Delete(ctx service.DeleteContext) error {
 	return service.orderDao.DeleteOrderById(ctx.Param().(string))
 }
 
-func (service *OrderService) Query(ctx model.QueryContext) error {
+func (service *OrderService) Query(ctx service.QueryContext) error {
 	order, err := service.orderDao.QueryOrderById(ctx.Param().(string))
 	if err != nil {
 		return err
@@ -42,13 +43,13 @@ func (service *OrderService) Query(ctx model.QueryContext) error {
 	return nil
 }
 
-func (service *OrderService) UpdateByNo(ctx model.UpdateContext) error {
+func (service *OrderService) UpdateByNo(ctx service.UpdateContext) error {
 	updateMap := ctx.Param().(map[string]interface{})
 	return service.orderDao.UpdateByNo(ctx.GetIdentify(), updateMap)
 }
 
-func (service *OrderService) Create(ctx model.CreateContext) error {
-	order := ctx.Param().(model.DemoOrder)
+func (service *OrderService) Create(ctx service.CreateContext) error {
+	order := ctx.Param().(model.Order)
 	_, err := service.orderDao.QueryOrderByNo(order.OrderNo)
 	if err == gorm.ErrRecordNotFound {
 		ctx.SetResult(order)
@@ -60,7 +61,7 @@ func (service *OrderService) Create(ctx model.CreateContext) error {
 	return nil
 }
 
-func (service *OrderService) QueryOrders(ctx model.QueryObjectsContext) error {
+func (service *OrderService) QueryOrders(ctx service.QueryObjectsContext) error {
 	orders, err := service.orderDao.QueryOrders(ctx.Page(), ctx.PageSize())
 	if err != nil {
 		return err
@@ -73,7 +74,7 @@ func (service *OrderService) QueryOrders(ctx model.QueryObjectsContext) error {
 	return nil
 }
 
-func (service *OrderService) QueryOrdersByName(ctx model.QueryByNameContext) error {
+func (service *OrderService) QueryOrdersByName(ctx service.QueryByNameContext) error {
 	if ctx.Desc() {
 		orders, err := service.orderDao.QueryOrdersByName(ctx.Param().(string), ctx.Order(), "DESC")
 		if err != nil {
@@ -99,7 +100,7 @@ func (service *OrderService) QueryOrdersByName(ctx model.QueryByNameContext) err
 	return nil
 }
 
-func (service *OrderService) UpdateById(ctx model.UpdateContext) error {
+func (service *OrderService) UpdateById(ctx service.UpdateContext) error {
 	ctx.SetResult(ctx.Param().(map[string]interface{}))
 	return service.orderDao.UpdateById(ctx.GetIdentify(), ctx.Param().(map[string]interface{}))
 }

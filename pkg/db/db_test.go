@@ -4,17 +4,17 @@ import (
 	"github.com/stretchr/testify/assert"
 	"math/rand"
 	"strconv"
-	"testGinandGorm/common/mySQL_db"
+	"testGinandGorm/common/mySQL"
 	"testGinandGorm/pkg/model"
 	"testing"
 	"time"
 )
 
 func initial() (orderDB OrderDB, sample *model.DemoOrder) {
-	db :=mySQL_db.DbInit()
+	db := mySQL.DbInit()
 	orderDB = NewMyOrderDB(db)
 	db = db.LogMode(true)
-	sample = &model.DemoOrder{OrderNo: time.Now().Format("2006-01-02 15:04:05")+queryRandomString(10), UserName: "raious", Amount: 444, Status: "over", FileUrl: ".././pkg/mySQL_db"}
+	sample = &model.DemoOrder{OrderNo: time.Now().Format("2006-01-02 15:04:05") + queryRandomString(10), UserName: "raious", Amount: 444, Status: "over", FileUrl: ".././pkg/mySQL"}
 	return orderDB, sample
 }
 
@@ -101,8 +101,7 @@ func TestUpdateById(t *testing.T) {
 	assert.NoError(t, db.DeleteById(strconv.Itoa(sample.ID)))
 }
 
-
-func  queryRandomString(l int) string {
+func queryRandomString(l int) string {
 	str := "0123456789abcdefghijklmnopqrstuvwxyz"
 	bytes := []byte(str)
 	result := []byte{}
@@ -112,4 +111,3 @@ func  queryRandomString(l int) string {
 	}
 	return string(result)
 }
-

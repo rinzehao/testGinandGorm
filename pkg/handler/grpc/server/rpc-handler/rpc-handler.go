@@ -9,13 +9,13 @@ import (
 	"strconv"
 	"testGinandGorm/pkg/handler/grpc/pb"
 	"testGinandGorm/pkg/model"
-	"testGinandGorm/pkg/service"
+	"testGinandGorm/pkg/service/profile"
 )
 
 type Server struct{}
 
 type OrderHandler struct {
-	orderService *service.OrderService
+	orderService *profile.OrderService
 }
 
 func (s *Server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
@@ -26,7 +26,7 @@ func (s *Server) SayHelloAgain(ctx context2.Context, request *pb.HelloRequest) (
 	return &pb.HelloReply{Message: "HelloAgain " + request.Name}, nil
 }
 
-func NewHandler(service *service.OrderService) *OrderHandler {
+func NewHandler(service *profile.OrderService) *OrderHandler {
 	return &OrderHandler{orderService: service}
 }
 
@@ -42,10 +42,10 @@ func (handler *OrderHandler) QueryOrderById(c context.Context, in *pb.ID) (reply
 	order, err := handler.orderService.QueryOrderById(id)
 	if err != nil {
 		status.Error(codes.InvalidArgument, "订单不存在")
-		return nil,err
+		return nil, err
 	}
 	log.Print(order)
-	reply =new(pb.OrderModel)
+	reply = new(pb.OrderModel)
 	reply.Id = int32(order.ID)
 	reply.UserName = order.UserName
 	reply.OrderNo = order.OrderNo
@@ -57,18 +57,18 @@ func (handler *OrderHandler) QueryOrderById(c context.Context, in *pb.ID) (reply
 
 func (handler *OrderHandler) CreateOrder(ctx context2.Context, orderInput *pb.OrderModel) (id *pb.ID, err error) {
 	var order model.DemoOrder
-	id =new(pb.ID)
-	order.ID= int(orderInput.Id)
-	order.OrderNo =orderInput.OrderNo
-	order.Status =orderInput.Status
-	order.FileUrl =orderInput.FileUrl
-	order.UserName=orderInput.UserName
+	id = new(pb.ID)
+	order.ID = int(orderInput.Id)
+	order.OrderNo = orderInput.OrderNo
+	order.Status = orderInput.Status
+	order.FileUrl = orderInput.FileUrl
+	order.UserName = orderInput.UserName
 	if err := handler.orderService.CreateOrder(&order); err != nil {
 		status.Error(codes.InvalidArgument, "插入失败")
-		id.Id="/"
-		return id,err
+		id.Id = "/"
+		return id, err
 	}
-	id.Id=strconv.Itoa(order.ID)
+	id.Id = strconv.Itoa(order.ID)
 	return id, err
 }
 
@@ -77,12 +77,12 @@ func (handler *OrderHandler) DeleteOrder(ctx context2.Context, in *pb.ID) (*pb.I
 	if id, _ := strconv.Atoi(id); id == 0 || id < 0 {
 		return nil, nil
 	}
-	in.Id="/"
-	if err := handler.orderService.DeleteOrderById(id) ; err != nil {
+	in.Id = "/"
+	if err := handler.orderService.DeleteOrderById(id); err != nil {
 		status.Error(codes.InvalidArgument, "删除失败")
-		return in,err
+		return in, err
 	}
-	in.Id=id
+	in.Id = id
 
 	return in, nil
 }
@@ -96,9 +96,9 @@ func (handler *OrderHandler) UpdateOrder(ctx context2.Context, orderModel *pb.Or
 		"status":    orderModel.Status,
 		"file_url":  orderModel.FileUrl,
 	}
-	if err := handler.orderService.UpdateById(m,strconv.Itoa(int(orderModel.Id))); err != nil {
+	if err := handler.orderService.UpdateById(m, strconv.Itoa(int(orderModel.Id))); err != nil {
 		status.Error(codes.InvalidArgument, "更新成功")
-		return orderModel,err
+		return orderModel, err
 	}
-	return orderModel,nil
+	return orderModel, nil
 }
