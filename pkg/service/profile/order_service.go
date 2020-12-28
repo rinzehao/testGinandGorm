@@ -7,16 +7,6 @@ import (
 	"testGinandGorm/pkg/service"
 )
 
-//type Service interface {
-//	Schema () string
-//	Delete(model.DeleteContext) error
-//	Query(model.QueryContext) error
-//	UpdateByNo(model.UpdateContext) error
-//	Create(model.CreateContext) error
-//	QueryOrders(model.QueryObjectsContext) error
-//	QueryOrdersByName(model.QueryByNameContext) error
-//	UpdateById(model.UpdateContext) error
-//}
 
 type OrderService struct {
 	orderDao dao.OrderDao
