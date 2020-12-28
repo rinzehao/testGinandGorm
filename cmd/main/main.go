@@ -16,11 +16,10 @@ import (
 
 func main() {
 	sqlDB := mySQL.DbInit()
-	sqlDB = sqlDB.LogMode(true)
 	defer sqlDB.Close()
-	orderDB := db.NewMyOrderDB(sqlDB)
+	orderDB := db.NewOrderDB(sqlDB)
 	orderCache := redis.NewRedisCache(redis.DEFAULT)
-	orderDao := dao.NewMyOrderDao(orderDB, &orderCache)
+	orderDao := dao.NewOrderDao(orderDB, &orderCache)
 	orderService := profile.NewOrderService(orderDao)
 	runtime := service.NewProfileRuntime(orderService)
 	orderHandler := handler.NewOrderHandler(runtime)

@@ -8,7 +8,7 @@ import (
 	"testGinandGorm/pkg/model"
 )
 
-type OrderDao interface {
+type Dao interface {
 	CreateOrder(s *model.Order) error
 	DeleteOrderById(id string) error
 	UpdateByNo(no string, m map[string]interface{}) error
@@ -19,44 +19,44 @@ type OrderDao interface {
 	UpdateById(id string, m map[string]interface{}) error
 }
 
-type MyOrderDao struct {
-	db    db.OrderDB
+type OrderDao struct {
+	db    db.DB
 	cache *redis.Cache
 }
 
 const (
-	id_prefix = "OrderID:"
-	no_prefix = "OrderNo:"
+	idPrefix = "OrderID:"
+	noPrefix = "OrderNo:"
 )
 
-func NewMyOrderDao(db db.OrderDB, cache *redis.Cache) *MyOrderDao {
-	return &MyOrderDao{db: db, cache: cache}
+func NewOrderDao(db db.DB, cache *redis.Cache) *OrderDao {
+	return &OrderDao{db: db, cache: cache}
 }
 
-func (dao *MyOrderDao) CreateOrder(s *model.Order) error {
+func (dao *OrderDao) CreateOrder(s *model.Order) error {
 	// step1 写入db
 	if err := dao.db.CreateOrder(s); err != nil {
 		return err
 	}
 	// step2 写入cache
 	// ID -> OrderNo OrderNo->OrderEntity
-	if err := dao.cache.SetString(id_prefix+strconv.Itoa(s.ID), no_prefix+s.OrderNo); err != nil {
+	if err := dao.cache.SetString(idPrefix+strconv.Itoa(s.ID), noPrefix+s.OrderNo); err != nil {
 		return err
 	}
-	if err := dao.cache.SetString(no_prefix+s.OrderNo, s); err != nil {
+	if err := dao.cache.SetString(noPrefix+s.OrderNo, s); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (dao *MyOrderDao) DeleteOrderById(id string) error {
+func (dao *OrderDao) DeleteOrderById(id string) error {
 	//step1 cache
 	var cacheNoKey string
-	dao.cache.GetString(id_prefix+id, &cacheNoKey)
+	dao.cache.GetString(idPrefix+id, &cacheNoKey)
 	if _, err := dao.cache.Delete(cacheNoKey); err != nil {
 		return err
 	}
-	if _, err := dao.cache.Delete(id_prefix + id); err != nil {
+	if _, err := dao.cache.Delete(idPrefix + id); err != nil {
 		return err
 	}
 
@@ -68,9 +68,9 @@ func (dao *MyOrderDao) DeleteOrderById(id string) error {
 	return nil
 }
 
-func (dao *MyOrderDao) UpdateByNo(orderNo string, m map[string]interface{}) error {
+func (dao *OrderDao) UpdateByNo(orderNo string, m map[string]interface{}) error {
 	//step1 cache淘汰
-	if _, err := dao.cache.Delete(no_prefix + orderNo); err != nil {
+	if _, err := dao.cache.Delete(noPrefix + orderNo); err != nil {
 		return err
 	}
 	//step2 db写入
@@ -82,21 +82,21 @@ func (dao *MyOrderDao) UpdateByNo(orderNo string, m map[string]interface{}) erro
 	if err != nil {
 		return err
 	}
-	if err := dao.cache.SetString(no_prefix+orderNo, order); err != nil {
+	if err := dao.cache.SetString(noPrefix+orderNo, order); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (dao *MyOrderDao) QueryOrderById(id string) (order *model.Order, err error) {
+func (dao *OrderDao) QueryOrderById(id string) (order *model.Order, err error) {
 	//step1 get from cache
-	flag, err := dao.cache.Exist(id_prefix + id)
+	flag, err := dao.cache.Exist(idPrefix + id)
 	if err != nil {
 		return nil, err
 	}
 	var cacheNoKey string
 	if flag == true {
-		if err := dao.cache.GetString(id_prefix+id, &cacheNoKey); err != nil {
+		if err := dao.cache.GetString(idPrefix+id, &cacheNoKey); err != nil {
 			return nil, err
 		}
 		if flag, err = dao.cache.Exist(cacheNoKey); err != nil {
@@ -118,20 +118,20 @@ func (dao *MyOrderDao) QueryOrderById(id string) (order *model.Order, err error)
 	}
 	//step3 set cache
 	if order != nil {
-		dao.cache.SetString(no_prefix+order.OrderNo, order)
-		dao.cache.SetString(id_prefix+id, no_prefix+order.OrderNo)
+		dao.cache.SetString(noPrefix+order.OrderNo, order)
+		dao.cache.SetString(idPrefix+id, noPrefix+order.OrderNo)
 	}
 	return order, nil
 }
 
-func (dao *MyOrderDao) QueryOrderByNo(OrderNo string) (order *model.Order, err error) {
+func (dao *OrderDao) QueryOrderByNo(OrderNo string) (order *model.Order, err error) {
 	//step1 get from cache
-	flag, err := dao.cache.Exist(no_prefix + OrderNo)
+	flag, err := dao.cache.Exist(noPrefix + OrderNo)
 	if err != nil {
 		return nil, err
 	}
 	if flag == true {
-		if err = dao.cache.GetString(no_prefix+OrderNo, &order); err != nil {
+		if err = dao.cache.GetString(noPrefix+OrderNo, &order); err != nil {
 			return nil, err
 		}
 		if order != nil {
@@ -145,22 +145,22 @@ func (dao *MyOrderDao) QueryOrderByNo(OrderNo string) (order *model.Order, err e
 	}
 	//step3 set cache
 	if order != nil {
-		if err := dao.cache.SetString(no_prefix+OrderNo, order); err != nil {
+		if err := dao.cache.SetString(noPrefix+OrderNo, order); err != nil {
 			return nil, err
 		}
 	}
 	return order, nil
 }
 
-func (dao *MyOrderDao) QueryOrders(page, pageSize int) (orders []*model.Order, err error) {
+func (dao *OrderDao) QueryOrders(page, pageSize int) (orders []*model.Order, err error) {
 	return dao.db.QueryOrders(page, pageSize)
 }
 
-func (dao *MyOrderDao) QueryOrdersByName(userName, orderBy, desc string) (orders []*model.Order, err error) {
+func (dao *OrderDao) QueryOrdersByName(userName, orderBy, desc string) (orders []*model.Order, err error) {
 	return dao.db.QueryOrdersByName(userName, orderBy, desc)
 }
 
-func (dao *MyOrderDao) UpdateById(id string, m map[string]interface{}) error {
+func (dao *OrderDao) UpdateById(id string, m map[string]interface{}) error {
 	//step1 db写入
 	if err := dao.db.UpdateById(id, m); err != nil {
 		return err
@@ -171,7 +171,7 @@ func (dao *MyOrderDao) UpdateById(id string, m map[string]interface{}) error {
 		return err
 	}
 	var cacheNoKey string
-	if err := dao.cache.GetString(id_prefix+id, &cacheNoKey); err != nil {
+	if err := dao.cache.GetString(idPrefix+id, &cacheNoKey); err != nil {
 		return nil
 	}
 	if _, err = dao.cache.Delete(cacheNoKey); err != nil {

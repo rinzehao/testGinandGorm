@@ -9,10 +9,10 @@ import (
 
 
 type OrderService struct {
-	orderDao dao.OrderDao
+	orderDao dao.Dao
 }
 
-func NewOrderService(dao dao.OrderDao) *OrderService {
+func NewOrderService(dao dao.Dao) *OrderService {
 	return &OrderService{orderDao: dao}
 }
 
