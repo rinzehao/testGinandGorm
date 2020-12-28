@@ -8,8 +8,7 @@ import (
 	_ "testGinandGorm/pkg/service"
 )
 
-
-func BindRoute(orderHandler handler.OrderHandler) error{
+func BindRoute(orderHandler handler.OrderHandler) error {
 	r := gin.Default()
 	r.POST("/order/create", orderHandler.CreateOrder)         //1）创建 demo_order
 	r.PUT("/order/update", orderHandler.UpdateOrder)          //2)更新demo_order （amount、stuatus、file_url）
@@ -19,7 +18,7 @@ func BindRoute(orderHandler handler.OrderHandler) error{
 	r.GET("/order_download", orderHandler.DownLoadExcel)      //6)下载xlsx表格
 	r.POST("/order_upload/:id", orderHandler.UploadAndUpdate) //7)上传文件
 	r.DELETE("/order/del/:id", orderHandler.DeleteOrderById)  //8)删除demo_order
-	if err :=r.Run() ; err != nil {
+	if err := r.Run(); err != nil {
 		return err
 	}
 	return nil

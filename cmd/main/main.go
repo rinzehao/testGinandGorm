@@ -20,9 +20,10 @@ func main() {
 	orderCache := redis.NewRedisCache(1e10 * 6 * 20)
 	orderDao := dao.NewMyOrderDao(orderDB, &orderCache)
 	orderService := service.NewOrderService(orderDao)
-	ordeHandler := handler.NewOrderHandler(*orderService)
+	runtime := service.NewProfileRuntime(orderService)
+	ordeHandler := handler.NewOrderHandler(runtime)
 	logger.InitLogger()
-	if err :=router.BindRoute(ordeHandler) ; err != nil {
+	if err := router.BindRoute(ordeHandler); err != nil {
 		logger.SugarLogger.Errorf("Fail to Route OrderHandler : InputID =%s , Error = %s", err)
 		panic(err)
 	}

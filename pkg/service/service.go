@@ -6,15 +6,16 @@ import (
 	"testGinandGorm/pkg/model"
 )
 
-type Service interface {
-	DeleteOrderById(model.DeleteContext) error
-	QueryOrderById(model.QueryContext) error
-	UpdateByOrderNo(model.UpdateContext) error
-	CreateOrder(model.CreateContext) error
-	QueryOrders(model.QueryOrdersContext) error
-	QueryOrdersByName(*model.OrderMade) error
-	UpdateById(model.UpdateContext) error
-}
+//type Service interface {
+//	Schema () string
+//	Delete(model.DeleteContext) error
+//	Query(model.QueryContext) error
+//	UpdateByNo(model.UpdateContext) error
+//	Create(model.CreateContext) error
+//	QueryOrders(model.QueryObjectsContext) error
+//	QueryOrdersByName(model.QueryByNameContext) error
+//	UpdateById(model.UpdateContext) error
+//}
 
 type OrderService struct {
 	orderDao dao.OrderDao
@@ -24,11 +25,15 @@ func NewOrderService(dao dao.OrderDao) *OrderService {
 	return &OrderService{orderDao: dao}
 }
 
-func (service *OrderService) DeleteOrderById(ctx model.DeleteContext) error {
+func (g *OrderService) Schema() string {
+	return "order"
+}
+
+func (service *OrderService) Delete(ctx model.DeleteContext) error {
 	return service.orderDao.DeleteOrderById(ctx.Param().(string))
 }
 
-func (service *OrderService) QueryOrderById(ctx model.QueryContext) error {
+func (service *OrderService) Query(ctx model.QueryContext) error {
 	order, err := service.orderDao.QueryOrderById(ctx.Param().(string))
 	if err != nil {
 		return err
@@ -37,12 +42,12 @@ func (service *OrderService) QueryOrderById(ctx model.QueryContext) error {
 	return nil
 }
 
-func (service *OrderService) UpdateByOrderNo(ctx model.UpdateContext) error {
+func (service *OrderService) UpdateByNo(ctx model.UpdateContext) error {
 	updateMap := ctx.Param().(map[string]interface{})
 	return service.orderDao.UpdateByNo(ctx.GetIdentify(), updateMap)
 }
 
-func (service *OrderService) CreateOrder(ctx model.CreateContext) error {
+func (service *OrderService) Create(ctx model.CreateContext) error {
 	order := ctx.Param().(model.DemoOrder)
 	_, err := service.orderDao.QueryOrderByNo(order.OrderNo)
 	if err == gorm.ErrRecordNotFound {
@@ -55,25 +60,42 @@ func (service *OrderService) CreateOrder(ctx model.CreateContext) error {
 	return nil
 }
 
-func (service *OrderService) QueryOrders(ctx model.QueryOrdersContext) error {
-	orders, err := service.orderDao.QueryOrders(ctx.Page().(int), ctx.PageSize().(int))
+func (service *OrderService) QueryOrders(ctx model.QueryObjectsContext) error {
+	orders, err := service.orderDao.QueryOrders(ctx.Page(), ctx.PageSize())
 	if err != nil {
 		return err
 	}
 	var array []interface{}
-	for i, v := range orders{
-		array[i] =v
+	for _, v := range orders {
+		array = append(array, v)
 	}
 	ctx.SetResult(array)
 	return nil
 }
 
-func (service *OrderService) QueryOrdersByName(ctx *model.OrderMade) error {
-	orders, err := service.orderDao.QueryOrdersByName(ctx.UserName, ctx.OrderBy, ctx.Desc)
-	if err != nil {
-		return err
+func (service *OrderService) QueryOrdersByName(ctx model.QueryByNameContext) error {
+	if ctx.Desc() {
+		orders, err := service.orderDao.QueryOrdersByName(ctx.Param().(string), ctx.Order(), "DESC")
+		if err != nil {
+			return err
+		}
+		var array []interface{}
+		for _, v := range orders {
+			array = append(array, v)
+		}
+		ctx.SetResult(array)
 	}
-	ctx.Group = orders
+	if !ctx.Desc() {
+		orders, err := service.orderDao.QueryOrdersByName(ctx.Param().(string), ctx.Order(), "ASC")
+		if err != nil {
+			return err
+		}
+		var array []interface{}
+		for _, v := range orders {
+			array = append(array, v)
+		}
+		ctx.SetResult(array)
+	}
 	return nil
 }
 

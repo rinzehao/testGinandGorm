@@ -85,3 +85,61 @@
 2020-12-25T17:24:38.584+0800	DEBUG	handler/handler.go:57	Trying to Query Order By OrderID : OrderID =140
 2020-12-25T17:24:38.584+0800	DEBUG	handler/handler.go:69	Trying to Delete Order By InputID : InputID =140
 2020-12-25T17:24:38.588+0800	INFO	handler/handler.go:81	Success!Succeed in Deleting Order By InputID : InputID =140
+2020-12-28T10:10:38.746+0800	DEBUG	handler/handler.go:236	Trying to Export Data As Excel File 
+2020-12-28T10:10:38.746+0800	DEBUG	handler/handler.go:312	Trying to Query All Orders 
+2020-12-28T10:11:23.680+0800	DEBUG	handler/handler.go:236	Trying to Export Data As Excel File 
+2020-12-28T10:11:23.681+0800	DEBUG	handler/handler.go:312	Trying to Query All Orders 
+2020-12-28T10:12:24.624+0800	DEBUG	handler/handler.go:236	Trying to Export Data As Excel File 
+2020-12-28T10:12:24.624+0800	DEBUG	handler/handler.go:312	Trying to Query All Orders 
+2020-12-28T10:15:45.007+0800	DEBUG	handler/handler.go:236	Trying to Export Data As Excel File 
+2020-12-28T10:15:45.007+0800	DEBUG	handler/handler.go:312	Trying to Query All Orders 
+2020-12-28T10:16:18.895+0800	DEBUG	handler/handler.go:236	Trying to Export Data As Excel File 
+2020-12-28T10:16:18.895+0800	DEBUG	handler/handler.go:312	Trying to Query All Orders 
+2020-12-28T10:17:45.827+0800	DEBUG	handler/handler.go:236	Trying to Export Data As Excel File 
+2020-12-28T10:17:45.828+0800	DEBUG	handler/handler.go:312	Trying to Query All Orders 
+2020-12-28T10:31:17.922+0800	DEBUG	handler/handler.go:236	Trying to Export Data As Excel File 
+2020-12-28T10:31:17.922+0800	DEBUG	handler/handler.go:312	Trying to Query All Orders 
+2020-12-28T10:36:58.858+0800	DEBUG	handler/handler.go:236	Trying to Export Data As Excel File 
+2020-12-28T10:36:58.858+0800	DEBUG	handler/handler.go:312	Trying to Query All Orders 
+2020-12-28T10:39:23.545+0800	DEBUG	handler/handler.go:236	Trying to Export Data As Excel File 
+2020-12-28T10:39:23.545+0800	DEBUG	handler/handler.go:312	Trying to Query All Orders 
+2020-12-28T10:41:43.816+0800	DEBUG	handler/handler.go:236	Trying to Export Data As Excel File 
+2020-12-28T10:41:43.816+0800	DEBUG	handler/handler.go:312	Trying to Query All Orders 
+2020-12-28T10:42:08.558+0800	DEBUG	handler/handler.go:236	Trying to Export Data As Excel File 
+2020-12-28T10:42:08.558+0800	DEBUG	handler/handler.go:312	Trying to Query All Orders 
+2020-12-28T10:43:12.459+0800	DEBUG	handler/handler.go:236	Trying to Export Data As Excel File 
+2020-12-28T10:43:12.459+0800	DEBUG	handler/handler.go:312	Trying to Query All Orders 
+2020-12-28T11:03:59.759+0800	DEBUG	handler/handler.go:236	Trying to Export Data As Excel File 
+2020-12-28T11:03:59.759+0800	DEBUG	handler/handler.go:312	Trying to Query All Orders 
+2020-12-28T11:17:07.479+0800	DEBUG	handler/handler.go:236	Trying to Export Data As Excel File 
+2020-12-28T11:17:07.479+0800	DEBUG	handler/handler.go:312	Trying to Query All Orders 
+2020-12-28T11:18:11.518+0800	INFO	handler/handler.go:248	Success!Succeed in DownLoading Data File!
+2020-12-28T11:18:51.080+0800	DEBUG	handler/handler.go:236	Trying to Export Data As Excel File 
+2020-12-28T11:18:51.081+0800	DEBUG	handler/handler.go:312	Trying to Query All Orders 
+2020-12-28T11:18:51.087+0800	INFO	handler/handler.go:248	Success!Succeed in DownLoading Data File!
+2020-12-28T12:00:46.715+0800	DEBUG	handler/handler.go:159	Trying to Query Order By InputID : InputID =2
+2020-12-28T12:00:46.715+0800	INFO	handler/handler.go:173	Success!Succeed in Querying Order By InputID : InputID =2
+2020-12-28T13:13:06.049+0800	DEBUG	handler/handler.go:217	Trying to Query Order By UserName : UserName =条五
+2020-12-28T13:13:49.468+0800	INFO	handler/handler.go:231	Success!Succeed in Querying Orders By OrderName : OrderName = 条五 , Counts Of Orders =%!s(int=5)
+2020-12-28T15:03:36.057+0800	DEBUG	handler/handler.go:165	Trying to Query Order By InputID : InputID =2
+2020-12-28T15:09:37.074+0800	DEBUG	handler/handler.go:170	Trying to Query Order By InputID : InputID =2
+2020-12-28T15:09:37.075+0800	INFO	handler/handler.go:185	Success!Succeed in Querying Order By InputID : InputID =2
+2020-12-28T15:13:29.414+0800	DEBUG	handler/handler.go:106	Trying to Create Order 
+2020-12-28T15:13:29.421+0800	INFO	handler/handler.go:121	Success!Succeed in Creating Order : OrderID =%!s(int=140)
+2020-12-28T15:13:54.003+0800	DEBUG	handler/handler.go:139	Trying to Update Order By OrderNo : OrderNo =140
+2020-12-28T15:13:54.011+0800	INFO	handler/handler.go:153	Success!Succeed in Updating Order  : OrderNo =140
+2020-12-28T15:14:38.496+0800	DEBUG	handler/handler.go:195	Trying to Query All Orders 
+2020-12-28T15:14:38.497+0800	INFO	handler/handler.go:210	Success!Succeed in Querying All Orders : Counts Of Orders =%!s(int=15)
+2020-12-28T15:15:53.071+0800	DEBUG	handler/handler.go:231	Trying to Query Order By UserName : UserName =五
+2020-12-28T15:15:53.072+0800	INFO	handler/handler.go:246	Success!Succeed in Querying Orders By OrderName : OrderName = 五 , Counts Of Orders =%!s(int=6)
+2020-12-28T15:16:10.870+0800	DEBUG	handler/handler.go:253	Trying to Export Data As Excel File 
+2020-12-28T15:16:10.870+0800	DEBUG	handler/handler.go:334	Trying to Query All Orders 
+2020-12-28T15:16:10.873+0800	INFO	handler/handler.go:265	Success!Succeed in DownLoading Data File!
+2020-12-28T15:16:50.404+0800	DEBUG	handler/handler.go:284	Trying to Query Order By OrderID : OrderID =140
+2020-12-28T15:16:50.405+0800	DEBUG	handler/handler.go:302	Trying to Update Order By OrderID : OrderID =140
+2020-12-28T15:16:50.411+0800	INFO	handler/handler.go:316	Success!Succeed in Uploading And Saving  : OrderID = 140
+2020-12-28T15:17:21.035+0800	DEBUG	handler/handler.go:170	Trying to Query Order By InputID : InputID =140
+2020-12-28T15:17:21.035+0800	INFO	handler/handler.go:185	Success!Succeed in Querying Order By InputID : InputID =140
+2020-12-28T15:17:46.307+0800	DEBUG	handler/handler.go:62	Trying to Query Order By OrderID : OrderID =140
+2020-12-28T15:17:46.307+0800	DEBUG	handler/handler.go:76	Trying to Delete Order By InputID : InputID =140
+2020-12-28T15:17:46.313+0800	INFO	handler/handler.go:89	Success!Succeed in Deleting Order By InputID : InputID =140

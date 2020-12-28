@@ -1,64 +1,9 @@
 package model
 
-type OrderMade struct {
-	Order     interface{}
-	OrderID   string
-	OrderNo   string
-	UpdateMap map[string]interface{}
-	Page      int
-	PageSize  int
-	UserName  string
-	OrderBy   string
-	Desc      string
-	Group     []*DemoOrder
-}
-
-func (o *OrderMade) QueryOrder() interface{} {
-	return &o.Order
-}
-
-func (o *OrderMade) QueryOrderID() string {
-	return o.OrderID
-}
-
-func (o *OrderMade) QueryOrderNo() string {
-	return o.OrderNo
-}
-
-func (o *OrderMade) QueryUpdateMap() map[string]interface{} {
-	return o.UpdateMap
-}
-
-func (o *OrderMade) QueryPage() int {
-	return o.Page
-}
-
-func (o *OrderMade) QueryPageSize() int {
-	return o.PageSize
-}
-
-func (o *OrderMade) QueryUserName() string {
-	return o.UserName
-}
-
-func (o *OrderMade) QueryOrderBy() string {
-	return o.OrderBy
-}
-
-func (o *OrderMade) QueryDesc() string {
-	return o.Desc
-}
-
-func (o *OrderMade) QueryGroup() []*DemoOrder {
-	return o.Group
-}
-
-
-
-type CreateCtx struct{
+type CreateCtx struct {
 	ItemTyp string
-	Req interface{}
-	Result interface{}
+	Req     interface{}
+	Result  interface{}
 }
 
 func (c *CreateCtx) Schema() string {
@@ -73,16 +18,15 @@ func (c *CreateCtx) GetResult() interface{} {
 	return c.Result
 }
 
-func (c *CreateCtx) SetResult(d interface{})  {
+func (c *CreateCtx) SetResult(d interface{}) {
 	c.Result = d
 }
 
-
-type UpdateCtx struct{
-	ItemTyp string
+type UpdateCtx struct {
+	ItemTyp  string
 	Identify string
-	Req interface{}
-	Result interface{}
+	Req      interface{}
+	Result   interface{}
 }
 
 func (c *UpdateCtx) Schema() string {
@@ -97,7 +41,7 @@ func (c *UpdateCtx) GetResult() interface{} {
 	return c.Result
 }
 
-func (c *UpdateCtx) SetResult(d interface{})  {
+func (c *UpdateCtx) SetResult(d interface{}) {
 	c.Result = d
 }
 
@@ -105,10 +49,10 @@ func (c *UpdateCtx) GetIdentify() string {
 	return c.Identify
 }
 
-type QueryCtx struct{
+type QueryCtx struct {
 	ItemTyp string
-	Req interface{}
-	Result interface{}
+	Req     interface{}
+	Result  interface{}
 }
 
 func (c *QueryCtx) Schema() string {
@@ -123,43 +67,41 @@ func (c *QueryCtx) GetResult() interface{} {
 	return c.Result
 }
 
-func (c *QueryCtx) SetResult(d interface{})  {
+func (c *QueryCtx) SetResult(d interface{}) {
 	c.Result = d
 }
 
-
-
-type QueryCtxs struct{
+type QueryCtxs struct {
 	ItemTyp string
-	ReqPage interface{}
-	ReqSize interface{}
-	Result []interface{}
+	ReqPage int
+	ReqSize int
+	Result  []interface{}
 }
 
 func (c *QueryCtxs) Schema() string {
 	return c.ItemTyp
 }
 
-func (c *QueryCtxs) Page() interface{} {
+func (c *QueryCtxs) Page() int {
 	return c.ReqPage
 }
 
-func (c *QueryCtxs) PageSize() interface{} {
-	return c.ReqPage
+func (c *QueryCtxs) PageSize() int {
+	return c.ReqSize
 }
 
 func (c *QueryCtxs) GetResult() []interface{} {
 	return c.Result
 }
 
-func (c *QueryCtxs) SetResult(d []interface{})  {
+func (c *QueryCtxs) SetResult(d []interface{}) {
 	c.Result = d
 }
 
-type DeleteCtx struct{
+type DeleteCtx struct {
 	ItemTyp string
-	Req interface{}
-	Result interface{}
+	Req     interface{}
+	Result  interface{}
 }
 
 func (c *DeleteCtx) Schema() string {
@@ -174,6 +116,38 @@ func (c *DeleteCtx) GetResult() interface{} {
 	return c.Result
 }
 
-func (c *DeleteCtx) SetResult(d interface{})  {
+func (c *DeleteCtx) SetResult(d interface{}) {
 	c.Result = d
+}
+
+type QueryByNameCtx struct {
+	ItemTyp     string
+	Req         interface{}
+	Result      []interface{}
+	OrderOption string
+	DescOrder   bool
+}
+
+func (c *QueryByNameCtx) Schema() string {
+	return c.ItemTyp
+}
+
+func (c *QueryByNameCtx) Param() interface{} {
+	return c.Req
+}
+
+func (c *QueryByNameCtx) Order() string {
+	return c.OrderOption
+}
+
+func (c *QueryByNameCtx) Desc() bool {
+	return c.DescOrder
+}
+
+func (c *QueryByNameCtx) SetResult(d []interface{}) {
+	c.Result = d
+}
+
+func (c *QueryByNameCtx) GetResult() []interface{} {
+	return c.Result
 }
