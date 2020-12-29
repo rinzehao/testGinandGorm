@@ -40,8 +40,9 @@ type QueryObjectsContext interface {
 type QueryByNameContext interface {
 	Schema() string
 	Param() interface{}
-	Order() string
-	Desc() bool
+	Order() string                  //指出查询结果排序顺序，非订单
+	Desc() bool                     //true为按照DESC顺序排序，false为按照ASC顺序排序
 	GetResult() []interface{}
 	SetResult([]interface{})
 }
+
