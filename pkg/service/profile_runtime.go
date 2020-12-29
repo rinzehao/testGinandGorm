@@ -1,7 +1,7 @@
 package service
 
 import (
-	"fmt"
+	"testGinandGorm/common/logger"
 )
 
 type ProfileItem interface {
@@ -21,7 +21,7 @@ type ProfileRuntime struct {
 
 func NewProfileRuntime(items ...ProfileItem) *ProfileRuntime {
 	if len(items) == 0 {
-		panic("profile item need item command")
+		logger.SugarLogger.Panic("profile item need item command")
 	}
 	pr := &ProfileRuntime{invoker: make(map[string]ProfileItem)}
 	for _, v := range items {
@@ -33,7 +33,8 @@ func NewProfileRuntime(items ...ProfileItem) *ProfileRuntime {
 func (p *ProfileRuntime) Push(ctx CreateContext) error {
 	rt, ok := p.invoker[ctx.Schema()]
 	if !ok {
-		panic(fmt.Sprintf("not found profile schema:%s", ctx.Schema()))
+		logger.SugarLogger.Panicf("not found profile schema:%s", ctx.Schema())
+		//panic(fmt.Sprintf("not found profile schema:%s", ctx.Schema()))
 	}
 	return rt.Create(ctx)
 }
@@ -41,7 +42,8 @@ func (p *ProfileRuntime) Push(ctx CreateContext) error {
 func (p *ProfileRuntime) QueryOrders(ctx QueryObjectsContext) error {
 	rt, ok := p.invoker[ctx.Schema()]
 	if !ok {
-		panic(fmt.Sprintf("not found profile schema:%s", ctx.Schema()))
+		logger.SugarLogger.Panicf("not found profile schema:%s", ctx.Schema())
+		//panic(fmt.Sprintf("not found profile schema:%s", ctx.Schema()))
 	}
 	return rt.QueryOrders(ctx)
 }
@@ -49,7 +51,7 @@ func (p *ProfileRuntime) QueryOrders(ctx QueryObjectsContext) error {
 func (p *ProfileRuntime) UpdateByNo(ctx UpdateContext) error {
 	rt, ok := p.invoker[ctx.Schema()]
 	if !ok {
-		panic(fmt.Sprintf("not found profile schema:%s", ctx.Schema()))
+		logger.SugarLogger.Panicf("not found profile schema:%s", ctx.Schema())
 	}
 	return rt.UpdateByNo(ctx)
 }
@@ -57,7 +59,7 @@ func (p *ProfileRuntime) UpdateByNo(ctx UpdateContext) error {
 func (p *ProfileRuntime) UpdateById(ctx UpdateContext) error {
 	rt, ok := p.invoker[ctx.Schema()]
 	if !ok {
-		panic(fmt.Sprintf("not found profile schema:%s", ctx.Schema()))
+		logger.SugarLogger.Panicf("not found profile schema:%s", ctx.Schema())
 	}
 	return rt.UpdateById(ctx)
 }
@@ -65,7 +67,8 @@ func (p *ProfileRuntime) UpdateById(ctx UpdateContext) error {
 func (p *ProfileRuntime) Delete(ctx DeleteContext) error {
 	rt, ok := p.invoker[ctx.Schema()]
 	if !ok {
-		panic(fmt.Sprintf("not found profile schema:%s", ctx.Schema()))
+		logger.SugarLogger.Panicf("not found profile schema:%s", ctx.Schema())
+
 	}
 	return rt.Delete(ctx)
 }
@@ -73,7 +76,7 @@ func (p *ProfileRuntime) Delete(ctx DeleteContext) error {
 func (p *ProfileRuntime) QueryById(ctx QueryContext) error {
 	rt, ok := p.invoker[ctx.Schema()]
 	if !ok {
-		panic(fmt.Sprintf("not found profile schema:%s", ctx.Schema()))
+		logger.SugarLogger.Panicf("not found profile schema:%s", ctx.Schema())
 	}
 	return rt.Query(ctx)
 }
@@ -81,7 +84,7 @@ func (p *ProfileRuntime) QueryById(ctx QueryContext) error {
 func (p *ProfileRuntime) QueryByName(ctx QueryByNameContext) error {
 	rt, ok := p.invoker[ctx.Schema()]
 	if !ok {
-		panic(fmt.Sprintf("not found profile schema:%s", ctx.Schema()))
+		logger.SugarLogger.Panicf("not found profile schema:%s", ctx.Schema())
 	}
 	return rt.QueryOrdersByName(ctx)
 }
