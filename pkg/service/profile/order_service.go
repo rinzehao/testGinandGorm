@@ -42,8 +42,11 @@ func (service *OrderService) Create(ctx service.CreateContext) error {
 	order := ctx.Param().(model.Order)
 	_, err := service.orderDao.QueryOrderByNo(order.OrderNo)
 	if err == gorm.ErrRecordNotFound {
+		if err :=service.orderDao.CreateOrder(&order) ;err != nil{
+			return err
+		}
 		ctx.SetResult(order)
-		return service.orderDao.CreateOrder(&order)
+		return nil
 	}
 	if err != nil {
 		return err

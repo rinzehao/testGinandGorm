@@ -10,11 +10,11 @@ import (
 	"time"
 )
 
-func initial() (orderDB OrderDB, sample *model.DemoOrder) {
+func initial() (orderDB *OrderDB, sample *model.Order) {
 	db := mySQL.DbInit()
-	orderDB = NewMyOrderDB(db)
+	orderDB = NewOrderDB(db)
 	db = db.LogMode(true)
-	sample = &model.DemoOrder{OrderNo: time.Now().Format("2006-01-02 15:04:05") + queryRandomString(10), UserName: "raious", Amount: 444, Status: "over", FileUrl: ".././pkg/mySQL"}
+	sample = &model.Order{OrderNo: time.Now().Format("2006-01-02 15:04:05") + queryRandomString(10), UserName: "raious", Amount: 444, Status: "over", FileUrl: ".././pkg/mySQL"}
 	return orderDB, sample
 }
 
