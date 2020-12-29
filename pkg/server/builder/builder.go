@@ -21,9 +21,9 @@ func NewService() *BuilderService {
 
 func buildMysql(s *BuilderService) {
 	sqlDB := mySQL.DbInit()
-	orderDB := db.NewMyOrderDB(sqlDB)
+	orderDB := db.NewOrderDB(sqlDB)
 	orderCache := redis.NewRedisCache(redis.DEFAULT)
-	orderDao := dao.NewMyOrderDao(orderDB, &orderCache)
+	orderDao := dao.NewOrderDao(orderDB, &orderCache)
 	orderService := profile.NewOrderService(orderDao)
 	s.ProfileRuntime = service.NewProfileRuntime(orderService)
 }
