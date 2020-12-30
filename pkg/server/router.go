@@ -4,11 +4,10 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
-	"testGinandGorm/pkg/server/handler"
 	_ "testGinandGorm/pkg/service"
 )
 
-func BindRoute(orderHandler *handler.OrderHandler) error {
+func BindRoute(orderHandler *OrderHandler) error {
 	r := gin.Default()
 	r.POST("/order/create", orderHandler.CreateOrder)         //1）创建 order
 	r.PUT("/order/update", orderHandler.UpdateOrder)          //2)更新order （amount、stuatus、file_url）

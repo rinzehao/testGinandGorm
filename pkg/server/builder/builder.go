@@ -5,13 +5,13 @@ import (
 	"testGinandGorm/common/redis"
 	"testGinandGorm/pkg/dao"
 	"testGinandGorm/pkg/dao/mysql"
-	"testGinandGorm/pkg/server/handler"
+	"testGinandGorm/pkg/server"
 	"testGinandGorm/pkg/service"
 	"testGinandGorm/pkg/service/profile"
 )
 
 type Router struct {
-	Handler *handler.OrderHandler
+	Handler *server.OrderHandler
 }
 
 func NewRouter () *Router{
@@ -27,7 +27,7 @@ func build(r *Router)  {
 	orderDao := dao.NewOrderDao(orderDB, &orderCache)
 	orderService := profile.NewOrderService(orderDao)
 	profileRuntime := service.NewProfileRuntime(orderService)
-	r.Handler = handler.NewOrderHandler(profileRuntime)
+	r.Handler = server.NewOrderHandler(profileRuntime)
 }
 
 

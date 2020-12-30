@@ -8,7 +8,7 @@ import (
 	"log"
 	"strconv"
 	"testGinandGorm/pkg/model"
-	"testGinandGorm/pkg/server/handler/grpc/pb"
+	"testGinandGorm/pkg/server/grpc/pb"
 	model2 "testGinandGorm/pkg/server/model"
 	"testGinandGorm/pkg/service"
 )

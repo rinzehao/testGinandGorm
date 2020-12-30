@@ -10,8 +10,8 @@ import (
 	"testGinandGorm/common/redis"
 	"testGinandGorm/pkg/dao"
 	"testGinandGorm/pkg/dao/mysql"
-	"testGinandGorm/pkg/server/handler/grpc/pb"
-	"testGinandGorm/pkg/server/handler/grpc/server/rpc-handler"
+	"testGinandGorm/pkg/server/grpc/pb"
+	"testGinandGorm/pkg/server/grpc/server/rpc-handler"
 	"testGinandGorm/pkg/service"
 	"testGinandGorm/pkg/service/profile"
 )
