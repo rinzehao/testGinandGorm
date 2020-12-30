@@ -9,9 +9,9 @@ import (
 	"testGinandGorm/common/mySQL"
 	"testGinandGorm/common/redis"
 	"testGinandGorm/pkg/dao"
-	"testGinandGorm/pkg/db"
-	"testGinandGorm/pkg/handler/grpc/pb"
-	"testGinandGorm/pkg/handler/grpc/server/rpc-handler"
+	"testGinandGorm/pkg/dao/mysql"
+	"testGinandGorm/pkg/server/handler/grpc/pb"
+	"testGinandGorm/pkg/server/handler/grpc/server/rpc-handler"
 	"testGinandGorm/pkg/service"
 	"testGinandGorm/pkg/service/profile"
 )
@@ -22,7 +22,7 @@ const (
 
 func main() {
 	Db := mySQL.DbInit()
-	orderDB := db.NewOrderDB(Db)
+	orderDB := mysql.NewOrderDB(Db)
 	orderCache := redis.NewRedisCache(redis.DEFAULT)
 	orderDao := dao.NewOrderDao(orderDB, &orderCache)
 

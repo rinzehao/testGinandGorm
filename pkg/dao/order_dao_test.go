@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"testGinandGorm/common/mySQL"
 	"testGinandGorm/common/redis"
-	"testGinandGorm/pkg/db"
+	"testGinandGorm/pkg/dao/mysql"
 	"testGinandGorm/pkg/model"
 	"testing"
 	"time"
@@ -14,7 +14,7 @@ import (
 
 func initial() (dao *OrderDao, sample *model.Order) {
 	sqlDb := mySQL.DbInit()
-	orderDb := db.NewOrderDB(sqlDb)
+	orderDb := mysql.NewOrderDB(sqlDb)
 	cache := redis.NewRedisCache(1e10 * 6 * 20)
 	dao = NewOrderDao(orderDb, &cache)
 	sqlDb = sqlDb.LogMode(true)

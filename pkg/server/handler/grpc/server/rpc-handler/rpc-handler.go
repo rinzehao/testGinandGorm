@@ -7,11 +7,10 @@ import (
 	"google.golang.org/grpc/status"
 	"log"
 	"strconv"
-	"testGinandGorm/pkg/handler/grpc/pb"
 	"testGinandGorm/pkg/model"
+	"testGinandGorm/pkg/server/handler/grpc/pb"
 	model2 "testGinandGorm/pkg/server/model"
 	"testGinandGorm/pkg/service"
-
 )
 
 type Server struct{}

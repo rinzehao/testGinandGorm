@@ -7,7 +7,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"testGinandGorm/pkg/handler/grpc/pb"
+	"testGinandGorm/pkg/server/handler/grpc/pb"
 	"time"
 
 	"golang.org/x/net/context"

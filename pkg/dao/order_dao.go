@@ -4,7 +4,7 @@ import (
 	"log"
 	"strconv"
 	"testGinandGorm/common/redis"
-	"testGinandGorm/pkg/db"
+	"testGinandGorm/pkg/dao/mysql"
 	"testGinandGorm/pkg/model"
 )
 
@@ -20,7 +20,7 @@ type Dao interface {
 }
 
 type OrderDao struct {
-	db    db.DB
+	db    mysql.DB
 	cache *redis.Cache
 }
 
@@ -29,7 +29,7 @@ const (
 	noPrefix = "OrderNo:"
 )
 
-func NewOrderDao(db db.DB, cache *redis.Cache) *OrderDao {
+func NewOrderDao(db mysql.DB, cache *redis.Cache) *OrderDao {
 	return &OrderDao{db: db, cache: cache}
 }
 

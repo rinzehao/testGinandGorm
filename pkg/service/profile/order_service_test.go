@@ -6,7 +6,7 @@ import (
 	"testGinandGorm/common/mySQL"
 	"testGinandGorm/common/redis"
 	"testGinandGorm/pkg/dao"
-	"testGinandGorm/pkg/db"
+	"testGinandGorm/pkg/dao/mysql"
 	"testGinandGorm/pkg/model"
 	model2 "testGinandGorm/pkg/server/model"
 	"testing"
@@ -16,7 +16,7 @@ import (
 func initial() (*OrderService, model.Order) {
 	sqlDb := mySQL.DbInit()
 	sqlDb =sqlDb.LogMode(true)
-	orderDb := db.NewOrderDB(sqlDb)
+	orderDb := mysql.NewOrderDB(sqlDb)
 	cache := redis.NewRedisCache(1e10 * 6 * 20)
 	dao := dao.NewOrderDao(orderDb, &cache)
 	orderService := NewOrderService(dao)

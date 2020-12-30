@@ -1,10 +1,10 @@
-package router
+package server
 
 import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
-	"testGinandGorm/pkg/handler"
+	"testGinandGorm/pkg/server/handler"
 	_ "testGinandGorm/pkg/service"
 )
 
