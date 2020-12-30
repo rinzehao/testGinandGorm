@@ -34,7 +34,6 @@ func (p *ProfileRuntime) Push(ctx CreateContext) error {
 	rt, ok := p.invoker[ctx.Schema()]
 	if !ok {
 		logger.SugarLogger.Panicf("not found profile schema:%s", ctx.Schema())
-		//panic(fmt.Sprintf("not found profile schema:%s", ctx.Schema()))
 	}
 	return rt.Create(ctx)
 }
@@ -43,7 +42,6 @@ func (p *ProfileRuntime) QueryOrders(ctx QueryObjectsContext) error {
 	rt, ok := p.invoker[ctx.Schema()]
 	if !ok {
 		logger.SugarLogger.Panicf("not found profile schema:%s", ctx.Schema())
-		//panic(fmt.Sprintf("not found profile schema:%s", ctx.Schema()))
 	}
 	return rt.QueryOrders(ctx)
 }
