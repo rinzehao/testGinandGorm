@@ -9,9 +9,9 @@ import (
 )
 
 func main() {
-	orderHandler :=builder.Construct()
+	router :=builder.NewRouter()
 	logger.InitLogger()
-	if err := server.BindRoute(orderHandler); err != nil {
+	if err := server.BindRoute(router.Handler); err != nil {
 		logger.SugarLogger.Errorf("Fail to Route OrderHandler : InputID =%s , Error = %s", err)
 		panic(err)
 	}
