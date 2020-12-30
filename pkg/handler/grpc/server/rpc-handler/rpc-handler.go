@@ -9,13 +9,16 @@ import (
 	"strconv"
 	"testGinandGorm/pkg/handler/grpc/pb"
 	"testGinandGorm/pkg/model"
-	"testGinandGorm/pkg/service/profile"
+	model2 "testGinandGorm/pkg/server/model"
+	"testGinandGorm/pkg/service"
+
 )
 
 type Server struct{}
 
 type OrderHandler struct {
-	orderService *profile.OrderService
+	//orderService *profile.OrderService
+	runtimeProfile *service.ProfileRuntime
 }
 
 func (s *Server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
@@ -26,9 +29,12 @@ func (s *Server) SayHelloAgain(ctx context2.Context, request *pb.HelloRequest) (
 	return &pb.HelloReply{Message: "HelloAgain " + request.Name}, nil
 }
 
-func NewHandler(service *profile.OrderService) *OrderHandler {
-	return &OrderHandler{orderService: service}
+func NewOrderHandler(runtime *service.ProfileRuntime) *OrderHandler {
+	return &OrderHandler{runtimeProfile: runtime}
 }
+//func NewHandler(service *profile.OrderService) *OrderHandler {
+//	return &OrderHandler{orderService: service}
+//}
 
 func (handler *OrderHandler) Test(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
 	return &pb.HelloReply{Message: "Hello " + in.Name}, nil
@@ -39,11 +45,18 @@ func (handler *OrderHandler) QueryOrderById(c context.Context, in *pb.ID) (reply
 	if id, _ := strconv.Atoi(id); id == 0 || id < 0 {
 		return nil, nil
 	}
-	order, err := handler.orderService.QueryOrderById(id)
+	ctx := &model2.QueryCtx{
+		ItemTyp: "order",
+		Req:     id,
+	}
+	//runtimeProfile *service.ProfileRuntime
+	//order, err := handler.orderService.QueryOrderById(id)
+	err = handler.runtimeProfile.QueryById(ctx)
 	if err != nil {
 		status.Error(codes.InvalidArgument, "订单不存在")
 		return nil, err
 	}
+	order :=ctx.GetResult().(model.Order)
 	log.Print(order)
 	reply = new(pb.OrderModel)
 	reply.Id = int32(order.ID)
@@ -56,14 +69,18 @@ func (handler *OrderHandler) QueryOrderById(c context.Context, in *pb.ID) (reply
 }
 
 func (handler *OrderHandler) CreateOrder(ctx context2.Context, orderInput *pb.OrderModel) (id *pb.ID, err error) {
-	var order model.DemoOrder
+	var order model.Order
 	id = new(pb.ID)
 	order.ID = int(orderInput.Id)
 	order.OrderNo = orderInput.OrderNo
 	order.Status = orderInput.Status
 	order.FileUrl = orderInput.FileUrl
 	order.UserName = orderInput.UserName
-	if err := handler.orderService.CreateOrder(&order); err != nil {
+	createCtx := &model2.CreateCtx{
+		ItemTyp: "order",
+		Req:     order,
+	}
+	if err := handler.runtimeProfile.Push(createCtx); err != nil {
 		status.Error(codes.InvalidArgument, "插入失败")
 		id.Id = "/"
 		return id, err
@@ -78,7 +95,11 @@ func (handler *OrderHandler) DeleteOrder(ctx context2.Context, in *pb.ID) (*pb.I
 		return nil, nil
 	}
 	in.Id = "/"
-	if err := handler.orderService.DeleteOrderById(id); err != nil {
+	delCtx := &model2.DeleteCtx{
+		ItemTyp: "order",
+		Req:      id,
+	}
+	if err := handler.runtimeProfile.Delete(delCtx); err != nil {
 		status.Error(codes.InvalidArgument, "删除失败")
 		return in, err
 	}
@@ -96,7 +117,13 @@ func (handler *OrderHandler) UpdateOrder(ctx context2.Context, orderModel *pb.Or
 		"status":    orderModel.Status,
 		"file_url":  orderModel.FileUrl,
 	}
-	if err := handler.orderService.UpdateById(m, strconv.Itoa(int(orderModel.Id))); err != nil {
+	updateCtx := &model2.UpdateCtx{
+		ItemTyp:  "order",
+		Identify: orderModel.OrderNo,
+		Req:      m,
+	}
+	//if err := handler.orderService.UpdateById(m, strconv.Itoa(int(orderModel.Id))); err != nil {
+	if err := handler.runtimeProfile.UpdateByNo(updateCtx); err != nil {
 		status.Error(codes.InvalidArgument, "更新成功")
 		return orderModel, err
 	}

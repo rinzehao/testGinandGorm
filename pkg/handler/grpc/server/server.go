@@ -7,7 +7,9 @@ import (
 	"log"
 	"net"
 	"testGinandGorm/common/mySQL"
+	"testGinandGorm/common/redis"
 	"testGinandGorm/pkg/dao"
+	"testGinandGorm/pkg/db"
 	"testGinandGorm/pkg/handler/grpc/pb"
 	"testGinandGorm/pkg/handler/grpc/server/rpc-handler"
 	"testGinandGorm/pkg/service"
@@ -20,20 +22,24 @@ const (
 
 func main() {
 	Db := mySQL.DbInit()
-	orderDao := dao.NewOrderDao(Db)
-	orderService := service.NewService(orderDao)
-	go crudService(orderService)
+	orderDB := db.NewOrderDB(Db)
+	orderCache := redis.NewRedisCache(redis.DEFAULT)
+	orderDao := dao.NewOrderDao(orderDB, &orderCache)
+
+	orderService := profile.NewOrderService(orderDao)
+	runtime := service.NewProfileRuntime(orderService)
+	go crudService(runtime)
 	select {}
 }
 
-func crudService(orderService *profile.OrderService) {
+func crudService(runtime *service.ProfileRuntime) {
 	listen, err := net.Listen("tcp", Address)
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)
 	}
 	s2 := grpc.NewServer()
 	// 服务注册
-	pb.RegisterOrderServer(s2, rpc_handler.NewHandler(orderService))
+	pb.RegisterOrderServer(s2, rpc_handler.NewOrderHandler(runtime))
 	reflection.Register(s2)
 	if err := s2.Serve(listen); err != nil {
 		log.Fatalf("failed to serve: %v", err)

@@ -26,14 +26,6 @@ type Handler interface {
 	UploadAndUpdate(c *gin.Context)
 }
 
-//
-//type Handler struct {
-//	*builder.BuilderService
-//}
-//
-//func NewHandler() *Handler {
-//	return &Handler{BuilderService: builder.NewService()}
-//}
 
 const itemOrder = "order"
 
@@ -43,7 +35,6 @@ type OrderHandler struct {
 
 func NewOrderHandler(runtime *service.ProfileRuntime) *OrderHandler {
 	return &OrderHandler{runtimeProfile: runtime}
-	//return &MyOrderHandler{orderService: &service}
 }
 
 func (handler *OrderHandler) DeleteOrderById(c *gin.Context) {
@@ -61,7 +52,6 @@ func (handler *OrderHandler) DeleteOrderById(c *gin.Context) {
 		Req:     id,
 	}
 	logger.SugarLogger.Debugf("Trying to Query Order By OrderID : OrderID =%s", id)
-	//if err := handler.orderService.QueryOrderById(ctx); err != nil {
 	if err := handler.runtimeProfile.QueryById(ctx); err != nil {
 		c.JSON(http.StatusBadRequest, &common.HttpResp{
 			ErrCode: "103",
@@ -75,7 +65,6 @@ func (handler *OrderHandler) DeleteOrderById(c *gin.Context) {
 		Req:     ctx.Req,
 	}
 	logger.SugarLogger.Debugf("Trying to Delete Order By InputID : InputID =%s", id)
-	//if err := handler.orderService.DeleteOrderById(ctx); err != nil {
 	if err := handler.runtimeProfile.Delete(ctx); err != nil {
 		c.JSON(http.StatusBadRequest, &common.HttpResp{
 			ErrCode: "102",
@@ -105,7 +94,6 @@ func (handler *OrderHandler) CreateOrder(c *gin.Context) {
 		Req:     order,
 	}
 	logger.SugarLogger.Debug("Trying to Create Order ")
-	//if err := handler.orderService.CreateOrder(ctx); err != nil {
 	if err := handler.runtimeProfile.Push(ctx); err != nil {
 		c.JSON(http.StatusBadRequest, &common.HttpResp{
 			ErrCode: "105",
@@ -138,7 +126,6 @@ func (handler *OrderHandler) UpdateOrder(c *gin.Context) {
 		Req:      handler.mapTransformer(&order),
 	}
 	logger.SugarLogger.Debugf("Trying to Update Order By OrderNo : OrderNo =%s", order.OrderNo)
-	//if err := handler.orderService.UpdateByOrderNo(ctx); err != nil {
 	if err := handler.runtimeProfile.UpdateByNo(ctx); err != nil {
 		c.JSON(http.StatusBadRequest, &common.HttpResp{
 			ErrCode: "104",
@@ -153,6 +140,7 @@ func (handler *OrderHandler) UpdateOrder(c *gin.Context) {
 	})
 	logger.SugarLogger.Infof("Success!Succeed in Updating Order  : OrderNo =%s", order.OrderNo)
 }
+
 
 func (handler *OrderHandler) QueryOrderById(c *gin.Context) {
 	id := c.Params.ByName("id")
@@ -169,7 +157,6 @@ func (handler *OrderHandler) QueryOrderById(c *gin.Context) {
 		Req:     id,
 	}
 	logger.SugarLogger.Debugf("Trying to Query Order By InputID : InputID =%s", id)
-	//err := handler.orderService.QueryOrderById(ctx)
 	err := handler.runtimeProfile.QueryById(ctx)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, &common.HttpResp{
@@ -194,7 +181,6 @@ func (handler *OrderHandler) QueryAllOrders(c *gin.Context) {
 		ReqSize: pageSize,
 	}
 	logger.SugarLogger.Debug("Trying to Query All Orders ")
-	//err := handler.orderService.QueryOrders(ctx)
 	err := handler.runtimeProfile.QueryOrders(ctx)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, &common.HttpResp{
@@ -230,7 +216,6 @@ func (handler *OrderHandler) QueryOrders(c *gin.Context) {
 	}
 
 	logger.SugarLogger.Debugf("Trying to Query Order By UserName : UserName =%s", order.UserName)
-	//err := handler.orderService.QueryOrdersByName(ctx)
 	err := handler.runtimeProfile.QueryByName(ctx)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, &common.HttpResp{
@@ -283,7 +268,6 @@ func (handler *OrderHandler) UploadAndUpdate(c *gin.Context) {
 		Req:     id,
 	}
 	logger.SugarLogger.Debugf("Trying to Query Order By OrderID : OrderID =%s", id)
-	//if err := handler.orderService.QueryOrderById(queryCtx); err != nil {
 	if err := handler.runtimeProfile.QueryById(queryCtx); err != nil {
 		c.JSON(http.StatusBadRequest, &common.HttpResp{
 			ErrCode: "103",
@@ -301,7 +285,6 @@ func (handler *OrderHandler) UploadAndUpdate(c *gin.Context) {
 		Req:      m,
 	}
 	logger.SugarLogger.Debugf("Trying to Update Order By OrderID : OrderID =%s", id)
-	//if err := handler.orderService.UpdateById(updateCtx); err != nil {
 	if err := handler.runtimeProfile.UpdateById(updateCtx); err != nil {
 		logger.SugarLogger.Errorf("Fail to Update Order : Error = %s", err)
 		c.JSON(http.StatusBadRequest, &common.HttpResp{
@@ -333,7 +316,6 @@ func (handler *OrderHandler) excelHandler(sheetName, outPutFileUrl string) error
 		ReqSize: pageSize,
 	}
 	logger.SugarLogger.Debug("Trying to Query All Orders ")
-	//err = handler.orderService.QueryOrders(ctx)
 	err = handler.runtimeProfile.QueryOrders(ctx)
 	if err != nil {
 		logger.SugarLogger.Errorf("Fail to Query Orders : Error = %s", err)

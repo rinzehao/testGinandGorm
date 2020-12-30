@@ -8,7 +8,7 @@ import (
 
 var SugarLogger *zap.SugaredLogger
 
-func InitLogger() {
+func InitLogger( ) {
 	writeSyncer := getLogWriter()
 	encoder := getEncoder()
 	core := zapcore.NewCore(encoder, writeSyncer, zapcore.DebugLevel)

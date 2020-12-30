@@ -201,3 +201,11 @@
 2020-12-28T17:44:53.944+0800	INFO	handler/handler.go:90	Success!Succeed in Deleting Order By InputID : InputID =140
 2020-12-29T10:16:40.552+0800	DEBUG	handler/handler.go:196	Trying to Query All Orders 
 2020-12-29T10:16:40.559+0800	INFO	handler/handler.go:211	Success!Succeed in Querying All Orders : Counts Of Orders =%!s(int=14)
+2020-12-30T13:48:13.920+0800	DEBUG	handler/handler.go:159	Trying to Query Order By InputID : InputID =152
+2020-12-30T13:48:13.923+0800	INFO	handler/handler.go:173	Success!Succeed in Querying Order By InputID : InputID =152
+2020-12-30T13:49:01.770+0800	DEBUG	handler/handler.go:159	Trying to Query Order By InputID : InputID =152
+2020-12-30T13:49:01.770+0800	INFO	handler/handler.go:173	Success!Succeed in Querying Order By InputID : InputID =152
+2020-12-30T13:49:33.435+0800	DEBUG	handler/handler.go:96	Trying to Create Order 
+2020-12-30T13:49:33.442+0800	INFO	handler/handler.go:110	Success!Succeed in Creating Order : OrderID =%!s(int=0)
+2020-12-30T13:49:51.753+0800	DEBUG	handler/handler.go:183	Trying to Query All Orders 
+2020-12-30T13:49:51.754+0800	INFO	handler/handler.go:197	Success!Succeed in Querying All Orders : Counts Of Orders =%!s(int=40)

@@ -20,6 +20,3 @@ func DbInit() *gorm.DB {
 	return Db
 }
 
-func DbClose(Db *gorm.DB) {
-	defer Db.Close()
-}
