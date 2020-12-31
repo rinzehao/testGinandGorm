@@ -14,6 +14,7 @@ import (
 	"testGinandGorm/pkg/server/grpc/server/rpc-handler"
 	"testGinandGorm/pkg/service"
 	"testGinandGorm/pkg/service/profile"
+	"testGinandGorm/pkg/service/profile/profile-item"
 )
 
 const (
@@ -25,9 +26,8 @@ func main() {
 	orderDB := mysql.NewOrderDB(Db)
 	orderCache := redis.NewRedisCache(redis.DEFAULT)
 	orderDao := dao.NewOrderDao(orderDB, &orderCache)
-
-	orderService := profile.NewOrderService(orderDao)
-	runtime := service.NewProfileRuntime(orderService)
+	orderService := profile_item.NewOrderService(orderDao)
+	runtime := profile.NewProfileRuntime(orderService)
 	go crudService(runtime)
 	select {}
 }

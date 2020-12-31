@@ -4,13 +4,12 @@ import (
 	"log"
 	"strconv"
 	"testGinandGorm/common/redis"
-	"testGinandGorm/pkg/dao/mysql"
 	"testGinandGorm/pkg/model"
 )
 
-type Dao interface {
+type OrderDB interface {
 	CreateOrder(s *model.Order) error
-	DeleteOrderById(id string) error
+	DeleteById(id string) error
 	UpdateByNo(no string, m map[string]interface{}) error
 	QueryOrderById(id string) (*model.Order, error)
 	QueryOrderByNo(no string) (*model.Order, error)
@@ -20,7 +19,7 @@ type Dao interface {
 }
 
 type OrderDao struct {
-	db    mysql.DB
+	db    OrderDB
 	cache *redis.Cache
 }
 
@@ -29,7 +28,7 @@ const (
 	noPrefix = "OrderNo:"
 )
 
-func NewOrderDao(db mysql.DB, cache *redis.Cache) *OrderDao {
+func NewOrderDao(db OrderDB, cache *redis.Cache) *OrderDao {
 	return &OrderDao{db: db, cache: cache}
 }
 

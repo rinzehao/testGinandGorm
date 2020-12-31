@@ -5,17 +5,6 @@ import (
 	"testGinandGorm/pkg/model"
 )
 
-type DB interface {
-	CreateOrder(s *model.Order) error
-	DeleteById(id string) error
-	UpdateByNo(no string, m map[string]interface{}) error
-	QueryOrderById(id string) (*model.Order, error)
-	QueryOrderByNo(no string) (*model.Order, error)
-	QueryOrders(page, pageSize int) (orders []*model.Order, err error)
-	QueryOrdersByName(userName, orderBy, desc string) (orders []*model.Order, err error)
-	UpdateById(id string, m map[string]interface{}) error
-}
-
 type OrderDB struct {
 	db *gorm.DB
 }

@@ -1,4 +1,4 @@
-package profile
+package profile_item
 
 import (
 	"github.com/stretchr/testify/assert"
@@ -15,18 +15,18 @@ import (
 
 func initial() (*OrderService, model.Order) {
 	sqlDb := mySQL.DbInit()
-	sqlDb =sqlDb.LogMode(true)
+	sqlDb = sqlDb.LogMode(true)
 	orderDb := mysql.NewOrderDB(sqlDb)
 	cache := redis.NewRedisCache(1e10 * 6 * 20)
 	dao := dao.NewOrderDao(orderDb, &cache)
 	orderService := NewOrderService(dao)
 	//orderSample := &model.DemoOrder{OrderNo: time.Now().Format("2006-01-02 15:04:05")+queryRandomString(5), UserName: "raious", Amount: 444, Status: "over", FileUrl: ".././pkg/dao"}
 	timeNow := time.Now()
-	hour:=timeNow.Hour()        //小时
-	minute:=timeNow.Minute()      //分钟
-	second:=timeNow.Second()      //秒
-	nanoSecond:=timeNow.Nanosecond()  //纳秒
-	str := strconv.Itoa(hour)+":"+strconv.Itoa(minute)+":"+strconv.Itoa(second)+":"+strconv.Itoa(nanoSecond)
+	hour := timeNow.Hour()             //小时
+	minute := timeNow.Minute()         //分钟
+	second := timeNow.Second()         //秒
+	nanoSecond := timeNow.Nanosecond() //纳秒
+	str := strconv.Itoa(hour) + ":" + strconv.Itoa(minute) + ":" + strconv.Itoa(second) + ":" + strconv.Itoa(nanoSecond)
 	orderSample := &model.Order{
 		ID:       0,
 		OrderNo:  str,
@@ -46,7 +46,7 @@ func TestCreateOrderByOrderNo(t *testing.T) {
 	}
 	orderService.Create(sample)
 	assert.NoError(t, orderService.Create(sample))
-	id :=strconv.Itoa(sample.GetResult().(model.Order).ID)
+	id := strconv.Itoa(sample.GetResult().(model.Order).ID)
 	delSample := &model2.DeleteCtx{
 		ItemTyp: "order",
 		Req:     id,
@@ -61,7 +61,7 @@ func TestDeleteOrderById(t *testing.T) {
 		Req:     order,
 	}
 	assert.NoError(t, orderService.Create(createSample))
-	id :=strconv.Itoa(createSample.GetResult().(model.Order).ID)
+	id := strconv.Itoa(createSample.GetResult().(model.Order).ID)
 	delSample := &model2.DeleteCtx{
 		ItemTyp: "order",
 		Req:     id,
@@ -76,7 +76,7 @@ func TestQueryOrderById(t *testing.T) {
 		Req:     order,
 	}
 	assert.NoError(t, orderService.Create(createSample))
-	id :=strconv.Itoa(createSample.GetResult().(model.Order).ID)
+	id := strconv.Itoa(createSample.GetResult().(model.Order).ID)
 	querySample := &model2.QueryCtx{
 		ItemTyp: "order",
 		Req:     id,
@@ -91,7 +91,7 @@ func TestUpdateByOrderNo(t *testing.T) {
 		Req:     order,
 	}
 	assert.NoError(t, orderService.Create(createSample))
-	m :=map[string]interface{} {
+	m := map[string]interface{}{
 		"user_name": "maruhire",
 		"amount":    17.8,
 		"status":    "已修改",
@@ -99,7 +99,7 @@ func TestUpdateByOrderNo(t *testing.T) {
 	updateSample := &model2.UpdateCtx{
 		ItemTyp:  "order",
 		Identify: order.OrderNo,
-		Req:     m,
+		Req:      m,
 	}
 	assert.NoError(t, orderService.UpdateByNo(updateSample))
 }
@@ -134,11 +134,11 @@ func TestUpdateUrlById(t *testing.T) {
 		Req:     order,
 	}
 	assert.NoError(t, orderService.Create(createSample))
-	id :=strconv.Itoa(createSample.GetResult().(model.Order).ID)
+	id := strconv.Itoa(createSample.GetResult().(model.Order).ID)
 	sample := model2.UpdateCtx{
 		ItemTyp:  "order",
 		Identify: id,
-		Req:      map[string]interface{}{
+		Req: map[string]interface{}{
 			"file_url": ".././test",
 		},
 	}
@@ -155,4 +155,3 @@ func TestUpdateUrlById(t *testing.T) {
 //	}
 //	return string(result)
 //}
-

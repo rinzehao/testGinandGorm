@@ -8,29 +8,29 @@ import (
 	"testGinandGorm/pkg/server"
 	"testGinandGorm/pkg/service"
 	"testGinandGorm/pkg/service/profile"
+	"testGinandGorm/pkg/service/profile/profile-item"
 )
 
 type Router struct {
-	Handler *server.OrderHandler
+	Handler *server.Handler
 }
 
-func NewRouter () *Router{
+func NewRouter() *Router {
 	r := &Router{}
 	build(r)
 	return r
 }
 
-func build(r *Router)  {
+func build(r *Router) {
 	sqlDB := mySQL.DbInit()
 	orderDB := mysql.NewOrderDB(sqlDB)
 	orderCache := redis.NewRedisCache(redis.DEFAULT)
 	orderDao := dao.NewOrderDao(orderDB, &orderCache)
-	orderService := profile.NewOrderService(orderDao)
-	profileRuntime := service.NewProfileRuntime(orderService)
-	r.Handler = server.NewOrderHandler(profileRuntime)
+	orderService := profile_item.NewOrderService(orderDao)
+	profileRuntime := profile.NewProfileRuntime(orderService)
+	profileManager := service.NewProfileManager(profileRuntime)
+	r.Handler = server.NewHandler(profileManager)
 }
-
-
 
 //func Construct() *handler.OrderHandler {
 //	sqlDB := mySQL.DbInit()
