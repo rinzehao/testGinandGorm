@@ -1,10 +1,12 @@
 package dao
 
 import (
-	"log"
+	"github.com/jinzhu/gorm"
+	"go.uber.org/zap"
 	"strconv"
 	"testGinandGorm/common/redis"
 	"testGinandGorm/pkg/model"
+	"testGinandGorm/common/log"
 )
 
 type OrderDB interface {
@@ -38,8 +40,9 @@ func (dao *OrderDao) CreateOrder(s *model.Order) error {
 		return err
 	}
 	// step2 写入cache
-	// ID -> OrderNo OrderNo->OrderEntity
-	if err := dao.cache.SetString(idPrefix+strconv.Itoa(s.ID), noPrefix+s.OrderNo); err != nil {
+	// ID -> OrderEntity
+	// OrderNo -> OrderEntity
+	if err := dao.cache.SetString(idPrefix+strconv.Itoa(s.ID),s); err != nil {
 		return err
 	}
 	if err := dao.cache.SetString(noPrefix+s.OrderNo, s); err != nil {
@@ -49,20 +52,23 @@ func (dao *OrderDao) CreateOrder(s *model.Order) error {
 }
 
 func (dao *OrderDao) DeleteOrderById(id string) error {
-	//step1 cache
-	var cacheNoKey string
-	dao.cache.GetString(idPrefix+id, &cacheNoKey)
-	if _, err := dao.cache.Delete(cacheNoKey); err != nil {
+	// step1 delete from db
+	order, err := dao.db.QueryOrderById(id)
+	if err !=nil && err != gorm.ErrRecordNotFound {
 		return err
 	}
-	if _, err := dao.cache.Delete(idPrefix + id); err != nil {
+	if err == gorm.ErrRecordNotFound || order == nil {
+		return nil
+	}
+	if err := dao.db.DeleteById(id) ; err != nil {
 		return err
 	}
-
-	//step2 mySQL
-	if err := dao.db.DeleteById(id); err != nil {
-		log.Println("delete order from mySQL failed ")
-		return err
+	// step2 delete from cache
+	if _, err := dao.cache.Delete(idPrefix+id) ; err != nil {
+		log.Logger.Warn("delete target cache fail", zap.String("id",idPrefix+id), zap.Error(err))
+	}
+	if _, err := dao.cache.Delete(noPrefix+order.OrderNo) ; err != nil {
+		log.Logger.Warn("delete target cache fail", zap.String("id",noPrefix+order.OrderNo), zap.Error(err))
 	}
 	return nil
 }
