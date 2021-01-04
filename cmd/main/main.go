@@ -4,16 +4,16 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"go.uber.org/zap"
-	"testGinandGorm/common/log"
+	"testGinandGorm/common/logger"
 	"testGinandGorm/pkg/server"
 	"testGinandGorm/pkg/server/builder"
 )
 
 func main() {
 	router := builder.NewRouter()
-	log.InitLogger()
+	logger.InitLogger("zap_log", "./")
 	if err := server.BindRoute(router.Handler); err != nil {
-		log.Logger.Error("Fail to Route OrderHandler", zap.Error(err))
+		logger.Logger.Error("Fail to Route OrderHandler", zap.Error(err))
 		panic(err)
 	}
 }
@@ -27,9 +27,9 @@ func main() {
 //	orderService := profile.NewOrderService(orderDao)
 //	runtime := service.NewProfileRuntime(orderService)
 //	orderHandler := handler.NewOrderHandler(runtime)
-//	log.InitLogger()
+//	logger.InitLogger()
 //	if err := router.BindRoute(orderHandler); err != nil {
-//		log.SugarLogger.Errorf("Fail to Route OrderHandler : InputID =%s , Error = %s", err)
+//		logger.SugarLogger.Errorf("Fail to Route OrderHandler : InputID =%s , Error = %s", err)
 //		panic(err)
 //	}
 //}

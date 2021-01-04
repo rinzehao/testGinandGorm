@@ -5,7 +5,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"go.uber.org/zap"
 	"strconv"
-	"testGinandGorm/common/log"
+	"testGinandGorm/common/logger"
 	"testGinandGorm/common/redis"
 	"testGinandGorm/pkg/model"
 )
@@ -66,10 +66,10 @@ func (dao *OrderDao) DeleteOrderById(id string) error {
 	}
 	// step2 delete from cache
 	if _, err := dao.cache.Delete(idPrefix + id); err != nil {
-		log.Logger.Warn("delete target cache fail", zap.String("id", idPrefix+id), zap.Error(err))
+		logger.Logger.Warn("delete target cache fail", zap.String("id", idPrefix+id), zap.Error(err))
 	}
 	if _, err := dao.cache.Delete(noPrefix + order.OrderNo); err != nil {
-		log.Logger.Warn("delete target cache fail", zap.String("orderNo", noPrefix+order.OrderNo), zap.Error(err))
+		logger.Logger.Warn("delete target cache fail", zap.String("orderNo", noPrefix+order.OrderNo), zap.Error(err))
 	}
 	return nil
 }
@@ -82,10 +82,10 @@ func (dao *OrderDao) UpdateByNo(orderNo string, m map[string]interface{}) error 
 	}
 	//step2 删除cache
 	if _, err := dao.cache.Delete(idPrefix + strconv.Itoa(order.ID)); err != nil {
-		log.Logger.Warn("delete target cache fail", zap.String("id", idPrefix+strconv.Itoa(order.ID)), zap.Error(err))
+		logger.Logger.Warn("delete target cache fail", zap.String("id", idPrefix+strconv.Itoa(order.ID)), zap.Error(err))
 	}
 	if _, err := dao.cache.Delete(noPrefix + orderNo); err != nil {
-		log.Logger.Warn("delete target cache fail", zap.String("orderNo", noPrefix+order.OrderNo), zap.Error(err))
+		logger.Logger.Warn("delete target cache fail", zap.String("orderNo", noPrefix+order.OrderNo), zap.Error(err))
 	}
 	//step3 DB更新
 	if err := dao.db.UpdateByNo(orderNo, m); err != nil {
@@ -109,7 +109,7 @@ func (dao *OrderDao) QueryOrderById(id string) (order *model.Order, err error) {
 	//step1 查询cache
 	err = dao.cache.GetString(idPrefix+id, &order)
 	if err != nil && err != redigo.ErrNil {
-		log.Logger.Warn("Query Order From Cache Fail", zap.String("id", idPrefix+id), zap.Error(err))
+		logger.Logger.Warn("Query Order From Cache Fail", zap.String("id", idPrefix+id), zap.Error(err))
 	}
 	if order != nil {
 		return order, nil
@@ -122,11 +122,11 @@ func (dao *OrderDao) QueryOrderById(id string) (order *model.Order, err error) {
 	//step3 写入cache
 	if order != nil {
 		if err := dao.cache.SetString(idPrefix+strconv.Itoa(order.ID), order); err != nil {
-			log.Logger.Warn("Set Order Cache Fail", zap.String("id", idPrefix+strconv.Itoa(order.ID)), zap.Error(err))
+			logger.Logger.Warn("Set Order Cache Fail", zap.String("id", idPrefix+strconv.Itoa(order.ID)), zap.Error(err))
 			return order, err
 		}
 		if err := dao.cache.SetString(noPrefix+order.OrderNo, order); err != nil {
-			log.Logger.Warn("Set Order Cache Fail", zap.String("orderNo", noPrefix+order.OrderNo), zap.Error(err))
+			logger.Logger.Warn("Set Order Cache Fail", zap.String("orderNo", noPrefix+order.OrderNo), zap.Error(err))
 			return order, err
 		}
 	}
@@ -137,7 +137,7 @@ func (dao *OrderDao) QueryOrderByNo(orderNo string) (order *model.Order, err err
 	//step1 查询cache
 	err = dao.cache.GetString(noPrefix+orderNo, &order)
 	if err != nil && err != redigo.ErrNil {
-		log.Logger.Warn("Query Order From Cache Fail", zap.String("orderNo", noPrefix+orderNo), zap.Error(err))
+		logger.Logger.Warn("Query Order From Cache Fail", zap.String("orderNo", noPrefix+orderNo), zap.Error(err))
 	}
 	if order != nil {
 		return order, nil
@@ -150,11 +150,11 @@ func (dao *OrderDao) QueryOrderByNo(orderNo string) (order *model.Order, err err
 	//step3 写入cache
 	if order != nil {
 		if err := dao.cache.SetString(idPrefix+strconv.Itoa(order.ID), order); err != nil {
-			log.Logger.Warn("Set Order Cache Fail", zap.String("id", idPrefix+strconv.Itoa(order.ID)), zap.Error(err))
+			logger.Logger.Warn("Set Order Cache Fail", zap.String("id", idPrefix+strconv.Itoa(order.ID)), zap.Error(err))
 			return order, err
 		}
 		if err := dao.cache.SetString(noPrefix+order.OrderNo, order); err != nil {
-			log.Logger.Warn("Set Order Cache Fail", zap.String("orderNo", noPrefix+order.OrderNo), zap.Error(err))
+			logger.Logger.Warn("Set Order Cache Fail", zap.String("orderNo", noPrefix+order.OrderNo), zap.Error(err))
 			return order, err
 		}
 	}
@@ -177,10 +177,10 @@ func (dao *OrderDao) UpdateById(id string, m map[string]interface{}) error {
 	}
 	//step2 删除cache
 	if _, err := dao.cache.Delete(idPrefix + id); err != nil {
-		log.Logger.Warn("delete target cache fail", zap.String("id", idPrefix+id), zap.Error(err))
+		logger.Logger.Warn("delete target cache fail", zap.String("id", idPrefix+id), zap.Error(err))
 	}
 	if _, err := dao.cache.Delete(noPrefix + order.OrderNo); err != nil {
-		log.Logger.Warn("delete target cache fail", zap.String("orderNo", noPrefix+order.OrderNo), zap.Error(err))
+		logger.Logger.Warn("delete target cache fail", zap.String("orderNo", noPrefix+order.OrderNo), zap.Error(err))
 	}
 	//step3 DB更新
 	if err := dao.db.UpdateById(id, m); err != nil {
@@ -192,11 +192,11 @@ func (dao *OrderDao) UpdateById(id string, m map[string]interface{}) error {
 		return err
 	}
 	if err := dao.cache.SetString(idPrefix+id, order); err != nil {
-		log.Logger.Warn("Set Order Cache Fail", zap.String("id", idPrefix+strconv.Itoa(order.ID)), zap.Error(err))
+		logger.Logger.Warn("Set Order Cache Fail", zap.String("id", idPrefix+strconv.Itoa(order.ID)), zap.Error(err))
 		return err
 	}
 	if err := dao.cache.SetString(noPrefix+order.OrderNo, order); err != nil {
-		log.Logger.Warn("Set Order Cache Fail", zap.String("orderNo", noPrefix+order.OrderNo), zap.Error(err))
+		logger.Logger.Warn("Set Order Cache Fail", zap.String("orderNo", noPrefix+order.OrderNo), zap.Error(err))
 		return err
 	}
 	return nil

@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strconv"
 	"testGinandGorm/common"
-	"testGinandGorm/common/log"
+	"testGinandGorm/common/logger"
 	_ "testGinandGorm/pkg/dao"
 	"testGinandGorm/pkg/model"
 	model2 "testGinandGorm/pkg/server/model"
@@ -44,7 +44,7 @@ func (handler *Handler) DeleteOrderById(c *gin.Context) {
 			ErrCode: "101",
 			ErrMsg:  "id输入错误",
 		})
-		log.Logger.Warn("Got Some Error At InputID", zap.String("InputID", strconv.Itoa(id)))
+		logger.Logger.Warn("Got Some Error At InputID", zap.String("InputID", strconv.Itoa(id)))
 		return
 	}
 	ctx := &model2.QueryCtx{
@@ -56,7 +56,7 @@ func (handler *Handler) DeleteOrderById(c *gin.Context) {
 			ErrCode: "102",
 			ErrMsg:  "获取条目失败：找不到指定条目, 或目标条目已删除",
 		})
-		log.Logger.Error("Fail to Query Order ", zap.Error(err))
+		logger.Logger.Error("Fail to Query Order ", zap.Error(err))
 		return
 	}
 	ctx = &model2.QueryCtx{
@@ -68,7 +68,7 @@ func (handler *Handler) DeleteOrderById(c *gin.Context) {
 			ErrCode: "103",
 			ErrMsg:  "order删除错误",
 		})
-		log.Logger.Error("Fail to Delete Order By InputID ", zap.String("InputID", id), zap.Error(err))
+		logger.Logger.Error("Fail to Delete Order By InputID ", zap.String("InputID", id), zap.Error(err))
 		return
 	}
 	c.JSON(http.StatusOK, &common.HttpResp{
@@ -83,7 +83,7 @@ func (handler *Handler) CreateOrder(c *gin.Context) {
 			ErrCode: "100",
 			ErrMsg:  "JSON绑定错误",
 		})
-		log.Logger.Error("Fail to Create Order ", zap.Error(err))
+		logger.Logger.Error("Fail to Create Order ", zap.Error(err))
 		return
 	}
 	ctx := &model2.CreateCtx{
@@ -95,7 +95,7 @@ func (handler *Handler) CreateOrder(c *gin.Context) {
 			ErrCode: "104",
 			ErrMsg:  "创建条目失败",
 		})
-		log.Logger.Error("Fail to Create Order ", zap.Error(err))
+		logger.Logger.Error("Fail to Create Order ", zap.Error(err))
 		return
 	}
 
@@ -112,7 +112,7 @@ func (handler *Handler) UpdateOrder(c *gin.Context) {
 			ErrCode: "100",
 			ErrMsg:  "JSON绑定错误",
 		})
-		log.Logger.Error("Fail to Create Order ", zap.Error(err))
+		logger.Logger.Error("Fail to Create Order ", zap.Error(err))
 		return
 	}
 	ctx := &model2.UpdateCtx{
@@ -125,7 +125,7 @@ func (handler *Handler) UpdateOrder(c *gin.Context) {
 			ErrCode: "105",
 			ErrMsg:  "更新条目失败",
 		})
-		log.Logger.Error("Fail to Update Order ", zap.Error(err))
+		logger.Logger.Error("Fail to Update Order ", zap.Error(err))
 		return
 	}
 	c.JSON(http.StatusOK, &common.HttpResp{
@@ -141,7 +141,7 @@ func (handler *Handler) QueryOrderById(c *gin.Context) {
 			ErrCode: "101",
 			ErrMsg:  "id输入错误",
 		})
-		log.Logger.Warn("Got Some Error At InputID", zap.String("InputID", strconv.Itoa(id)))
+		logger.Logger.Warn("Got Some Error At InputID", zap.String("InputID", strconv.Itoa(id)))
 		return
 	}
 	ctx := &model2.QueryCtx{
@@ -154,7 +154,7 @@ func (handler *Handler) QueryOrderById(c *gin.Context) {
 			ErrCode: "102",
 			ErrMsg:  "获取条目失败：找不到指定条目",
 		})
-		log.Logger.Error("Fail to Query Order ", zap.Error(err))
+		logger.Logger.Error("Fail to Query Order ", zap.Error(err))
 		return
 	}
 	c.JSON(http.StatusOK, &common.HttpResp{
@@ -176,7 +176,7 @@ func (handler *Handler) QueryAllOrders(c *gin.Context) {
 			ErrCode: "106",
 			ErrMsg:  "获取orderList失败",
 		})
-		log.Logger.Error("Fail to Query Order ", zap.Error(err))
+		logger.Logger.Error("Fail to Query Order ", zap.Error(err))
 		return
 	}
 	c.JSON(http.StatusOK, &common.HttpResp{
@@ -193,7 +193,7 @@ func (handler *Handler) QueryOrders(c *gin.Context) {
 			ErrCode: "100",
 			ErrMsg:  "模糊查找条目失败:JSON绑定错误",
 		})
-		log.Logger.Error("Fail to Create Order ", zap.Error(err))
+		logger.Logger.Error("Fail to Create Order ", zap.Error(err))
 		return
 	}
 	ctx := &model2.QueryByNameCtx{
@@ -208,7 +208,7 @@ func (handler *Handler) QueryOrders(c *gin.Context) {
 			ErrCode: "107",
 			ErrMsg:  "模糊查找条目失败:sql查询出错",
 		})
-		log.Logger.Error("Fail to Query Orders By UserName ", zap.String("userName", ctx.Req.(string)), zap.Error(err))
+		logger.Logger.Error("Fail to Query Orders By UserName ", zap.String("userName", ctx.Req.(string)), zap.Error(err))
 		return
 	}
 	c.JSON(http.StatusOK, &common.HttpResp{
@@ -226,7 +226,7 @@ func (handler *Handler) DownLoadExcel(c *gin.Context) {
 			ErrCode: "108",
 			ErrMsg:  "下载失败：保存表单失败",
 		})
-		log.Logger.Error("Fail to DownLoad Fail ", zap.Error(err))
+		logger.Logger.Error("Fail to DownLoad Fail ", zap.Error(err))
 		return
 	}
 	c.JSON(http.StatusOK, &common.HttpResp{
@@ -242,7 +242,7 @@ func (handler *Handler) UploadAndUpdate(c *gin.Context) {
 			ErrCode: "101",
 			ErrMsg:  "id输入错误",
 		})
-		log.Logger.Warn("Got Some Error At InputID", zap.String("InputID", strconv.Itoa(id)))
+		logger.Logger.Warn("Got Some Error At InputID", zap.String("InputID", strconv.Itoa(id)))
 		return
 	}
 	queryCtx := &model2.QueryCtx{
@@ -254,12 +254,12 @@ func (handler *Handler) UploadAndUpdate(c *gin.Context) {
 			ErrCode: "103",
 			ErrMsg:  "获取条目失败：找不到指定条目",
 		})
-		log.Logger.Error("Fail to Query Order ", zap.Error(err))
+		logger.Logger.Error("Fail to Query Order ", zap.Error(err))
 		return
 	}
 	url, err := handler.singleFileUpload(c)
 	if err != nil {
-		log.Logger.Error("Fail to Get UploadUrl ", zap.Error(err))
+		logger.Logger.Error("Fail to Get UploadUrl ", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, &common.HttpResp{
 			ErrCode: "109",
 			ErrMsg:  "上传错误",
@@ -275,7 +275,7 @@ func (handler *Handler) UploadAndUpdate(c *gin.Context) {
 		Req:      m,
 	}
 	if err := handler.profileManager.UpdateProfileById(updateCtx); err != nil {
-		log.Logger.Error("Fail to Update Order ", zap.Error(err))
+		logger.Logger.Error("Fail to Update Order ", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, &common.HttpResp{
 			ErrCode: "109",
 			ErrMsg:  "上传错误",
@@ -293,7 +293,7 @@ func (handler *Handler) excelHandler(sheetName, outPutFileUrl string) error {
 	file := xlsx.NewFile()
 	sheet, err := file.AddSheet(sheetName)
 	if err != nil {
-		log.Logger.Error("Fail to Add Table Sheet ", zap.Error(err))
+		logger.Logger.Error("Fail to Add Table Sheet ", zap.Error(err))
 		return err
 	}
 	var page, pageSize = 1, 100
@@ -305,7 +305,7 @@ func (handler *Handler) excelHandler(sheetName, outPutFileUrl string) error {
 	}
 	err = handler.profileManager.QueryProfiles(ctx)
 	if err != nil {
-		log.Logger.Error("Fail to Query Orders ", zap.Error(err))
+		logger.Logger.Error("Fail to Query Orders ", zap.Error(err))
 		return err
 	}
 	//定义表头
@@ -345,7 +345,7 @@ func (handler *Handler) excelHandler(sheetName, outPutFileUrl string) error {
 	}
 	err = file.Save(outPutFileUrl)
 	if err != nil {
-		log.Logger.Error("Fail to Save Form  ", zap.Error(err))
+		logger.Logger.Error("Fail to Save Form  ", zap.Error(err))
 		return err
 	}
 	return nil
@@ -376,7 +376,7 @@ func (handler *Handler) singleFileUpload(c *gin.Context) (string, error) {
 	dst := fmt.Sprintf("./file/" + file.Filename)
 	err = c.SaveUploadedFile(file, dst)
 	if err != nil {
-		log.Logger.Error("Fail to Save File ", zap.Error(err))
+		logger.Logger.Error("Fail to Save File ", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, &common.HttpResp{
 			ErrCode: "111",
 			ErrMsg:  "单文件保存失败",
