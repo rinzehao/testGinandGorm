@@ -19,7 +19,7 @@ func main() {
 }
 
 //func main() {
-//	sqlDB := mySQL.DbInit()
+//	sqlDB := mysql.DbInit()
 //	defer sqlDB.Close()
 //	orderDB := mysql.NewOrderDB(sqlDB)
 //	orderCache := redis.NewRedisCache(redis.DEFAULT)

@@ -4,17 +4,17 @@ package dao
 import (
 	"github.com/stretchr/testify/assert"
 	"strconv"
-	"testGinandGorm/common/mySQL"
+	"testGinandGorm/common/mysql"
 	"testGinandGorm/common/redis"
-	"testGinandGorm/pkg/dao/mysql"
+	mysql2"testGinandGorm/pkg/dao/mysql"
 	"testGinandGorm/pkg/model"
 	"testing"
 	"time"
 )
 
 func initial() (dao *OrderDao, sample *model.Order) {
-	sqlDb := mySQL.DbInit()
-	orderDb := mysql.NewOrderDB(sqlDb)
+	sqlDb := mysql.DbInit()
+	orderDb := mysql2.NewOrderDB(sqlDb)
 	cache := redis.NewRedisCache(1e10 * 6 * 20)
 	dao = NewOrderDao(orderDb, &cache)
 	sqlDb = sqlDb.LogMode(true)

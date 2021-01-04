@@ -3,7 +3,7 @@ package profile_item
 import (
 	"github.com/stretchr/testify/assert"
 	"strconv"
-	"testGinandGorm/common/mySQL"
+	"testGinandGorm/common/mysql"
 	"testGinandGorm/common/redis"
 	"testGinandGorm/pkg/dao"
 	"testGinandGorm/pkg/dao/mysql"
@@ -14,7 +14,7 @@ import (
 )
 
 func initial() (*OrderService, model.Order) {
-	sqlDb := mySQL.DbInit()
+	sqlDb := mysql.DbInit()
 	sqlDb = sqlDb.LogMode(true)
 	orderDb := mysql.NewOrderDB(sqlDb)
 	cache := redis.NewRedisCache(1e10 * 6 * 20)

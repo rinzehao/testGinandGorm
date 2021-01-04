@@ -6,7 +6,7 @@ import (
 	"google.golang.org/grpc/reflection"
 	"log"
 	"net"
-	"testGinandGorm/common/mySQL"
+	"testGinandGorm/common/mysql"
 	"testGinandGorm/common/redis"
 	"testGinandGorm/pkg/dao"
 	"testGinandGorm/pkg/dao/mysql"
@@ -22,7 +22,7 @@ const (
 )
 
 func main() {
-	Db := mySQL.DbInit()
+	Db := mysql.DbInit()
 	orderDB := mysql.NewOrderDB(Db)
 	orderCache := redis.NewRedisCache(redis.DEFAULT)
 	orderDao := dao.NewOrderDao(orderDB, &orderCache)

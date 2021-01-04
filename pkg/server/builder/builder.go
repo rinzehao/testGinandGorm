@@ -1,10 +1,10 @@
 package builder
 
 import (
-	"testGinandGorm/common/mySQL"
+	"testGinandGorm/common/mysql"
 	"testGinandGorm/common/redis"
 	"testGinandGorm/pkg/dao"
-	"testGinandGorm/pkg/dao/mysql"
+	mysql2"testGinandGorm/pkg/dao/mysql"
 	"testGinandGorm/pkg/server"
 	"testGinandGorm/pkg/service"
 	"testGinandGorm/pkg/service/profile"
@@ -22,8 +22,8 @@ func NewRouter() *Router {
 }
 
 func build(r *Router) {
-	sqlDB := mySQL.DbInit()
-	orderDB := mysql.NewOrderDB(sqlDB)
+	sqlDB := mysql.DbInit()
+	orderDB := mysql2.NewOrderDB(sqlDB)
 	orderCache := redis.NewRedisCache(redis.DEFAULT)
 	orderDao := dao.NewOrderDao(orderDB, &orderCache)
 	orderService := profile_item.NewOrderService(orderDao)
@@ -33,7 +33,7 @@ func build(r *Router) {
 }
 
 //func Construct() *handler.OrderHandler {
-//	sqlDB := mySQL.DbInit()
+//	sqlDB := mysql.DbInit()
 //	orderDB := mysql.NewOrderDB(sqlDB)
 //	orderCache := redis.NewRedisCache(redis.DEFAULT)
 //	orderDao := dao.NewOrderDao(orderDB, &orderCache)

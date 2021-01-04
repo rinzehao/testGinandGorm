@@ -4,17 +4,17 @@ import (
 	"github.com/stretchr/testify/assert"
 	"math/rand"
 	"strconv"
-	"testGinandGorm/common/mySQL"
+	"testGinandGorm/common/mysql"
 	"testGinandGorm/pkg/model"
 	"testing"
 	"time"
 )
 
 func initial() (orderDB *OrderDB, sample *model.Order) {
-	db := mySQL.DbInit()
+	db := mysql.DbInit()
 	orderDB = NewOrderDB(db)
 	db = db.LogMode(true)
-	sample = &model.Order{OrderNo: time.Now().Format("2006-01-02 15:04:05") + queryRandomString(10), UserName: "raious", Amount: 444, Status: "over", FileUrl: ".././pkg/mySQL"}
+	sample = &model.Order{OrderNo: time.Now().Format("2006-01-02 15:04:05") + queryRandomString(10), UserName: "raious", Amount: 444, Status: "over", FileUrl: ".././pkg/mysql"}
 	return orderDB, sample
 }
 
