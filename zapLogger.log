@@ -1,6 +1,0 @@
-2021-01-04T10:54:47.614+0800	WARN	server/handler.go:144	Got Some Error At InputID	{"InputID": "0"}
-2021-01-04T10:54:49.612+0800	WARN	server/handler.go:144	Got Some Error At InputID	{"InputID": "-1"}
-2021-01-04T10:54:52.633+0800	WARN	server/handler.go:144	Got Some Error At InputID	{"InputID": "0"}
-2021-01-04T10:54:55.588+0800	ERROR	server/handler.go:157	Fail to Query Order 	{"error": "record not found"}
-2021-01-04T10:54:59.537+0800	ERROR	server/handler.go:157	Fail to Query Order 	{"error": "record not found"}
-2021-01-04T10:55:01.794+0800	ERROR	server/handler.go:157	Fail to Query Order 	{"error": "record not found"}

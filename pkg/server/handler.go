@@ -220,7 +220,8 @@ func (handler *Handler) QueryOrders(c *gin.Context) {
 //下载Order,以excel形式导出
 func (handler *Handler) DownLoadExcel(c *gin.Context) {
 	var sheetName = "order_List"
-	var outPutFileUrl = "order.xlsx"
+	//var outPutFileUrl = "order.xlsx"
+	var outPutFileUrl = "./file/order.xlsx"
 	if err := handler.excelHandler(sheetName, outPutFileUrl); err != nil {
 		c.JSON(http.StatusInternalServerError, &common.HttpResp{
 			ErrCode: "108",
